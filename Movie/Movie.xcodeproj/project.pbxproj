@@ -80,7 +80,7 @@
 				55B2AA8D29069D6B009F0BD7 /* Sources */,
 				55B2AA8E29069D6B009F0BD7 /* Frameworks */,
 				55B2AA8F29069D6B009F0BD7 /* Resources */,
-				55B2AAA92906A021009F0BD7 /* SwiftFormatter */,
+				55B2AAA92906A021009F0BD7 /* SwiftFormater */,
 				55643E852906A49B0058B3A8 /* SwiftLint */,
 			);
 			buildRules = (
@@ -157,7 +157,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n\n";
 		};
-		55B2AAA92906A021009F0BD7 /* SwiftFormatter */ = {
+		55B2AAA92906A021009F0BD7 /* SwiftFormater */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -166,7 +166,7 @@
 			);
 			inputPaths = (
 			);
-			name = SwiftFormatter;
+			name = SwiftFormater;
 			outputFileListPaths = (
 			);
 			outputPaths = (
