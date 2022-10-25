@@ -43,5 +43,6 @@ final class TabBarController: UITabBarController {
             image: UIImage(systemName: Constants.personImageName),
             tag: 1
         )
+        tabBar.backgroundColor = .systemBackground
     }
 }

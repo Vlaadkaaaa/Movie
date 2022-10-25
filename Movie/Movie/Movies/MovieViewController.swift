@@ -11,6 +11,7 @@ final class MovieViewController: UIViewController {
         let segment = UISegmentedControl(items: ["Популярное", "Ожидаемые", "Лучшие"])
         segment.translatesAutoresizingMaskIntoConstraints = false
         segment.selectedSegmentIndex = 0
+        segment.addTarget(self, action: #selector(changeSegmentAction), for: .valueChanged)
         return segment
     }()
 
@@ -20,6 +21,11 @@ final class MovieViewController: UIViewController {
         return table
     }()
 
+    // MARK: Proivate Property
+
+    private var networkManager = NetworkManager()
+    private var dataSource: MoviesNetwork?
+
     // MARK: - Lyfe Cycle
 
     override func viewDidLoad() {
@@ -28,7 +34,7 @@ final class MovieViewController: UIViewController {
     }
 
     // MARK: Private Methods
-    
+
     private func setupUI() {
         title = "Фильмы"
         view.addSubview(filtherMovieSegmentControl)
@@ -38,6 +44,34 @@ final class MovieViewController: UIViewController {
         movieTableView.register(MovieViewCell.self, forCellReuseIdentifier: "MovieCell")
         movieTableView.register(AdViewCell.self, forCellReuseIdentifier: "AdCell")
         addContraint()
+        getMovies(genre: "popular")
+    }
+
+    @objc private func changeSegmentAction(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            getMovies(genre: "popular")
+        case 1:
+            getMovies(genre: "upcoming")
+        case 2:
+            getMovies(genre: "people")
+        default:
+            getMovies(genre: "popular")
+        }
+    }
+
+    private func getMovies(genre: String) {
+        networkManager.getMovies(genre: genre) { [weak self] result in
+            switch result {
+            case let .success(movies):
+                self?.dataSource = movies
+                DispatchQueue.main.async {
+                    self?.movieTableView.reloadData()
+                }
+            case let .failure(error):
+                print(error)
+            }
+        }
     }
 
     private func addContraint() {
@@ -55,10 +89,11 @@ final class MovieViewController: UIViewController {
 
 extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        40
+        (dataSource?.results.count ?? 0) + 1
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let data = dataSource?.results[indexPath.row]
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "AdCell", for: indexPath) as? AdViewCell
             cell?.setup(name: "banner")
@@ -66,7 +101,15 @@ extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
             return cell ?? UITableViewCell()
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as? MovieViewCell
-            cell?.label.text = "\(indexPath.row)"
+
+            let movie = Movies(
+                movieImageName: data?.posterPath ?? "",
+                movieNameText: data?.title ?? "Non",
+                movieDescriptionText: data?.releaseDate ?? "",
+                ratingValue: data?.voteAverage ?? 0
+            )
+
+            cell?.setupView(movie: movie)
             return cell ?? UITableViewCell()
         }
     }
