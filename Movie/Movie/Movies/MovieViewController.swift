@@ -25,6 +25,8 @@ final class MovieViewController: UIViewController {
 
     private var networkManager = NetworkManager()
     private var dataSource: MoviesNetwork?
+    private let dateFormater = DateFormatter()
+    private var movie: Movies?
 
     // MARK: - Lyfe Cycle
 
@@ -45,6 +47,7 @@ final class MovieViewController: UIViewController {
         movieTableView.register(AdViewCell.self, forCellReuseIdentifier: "AdCell")
         addContraint()
         getMovies(genre: "popular")
+        dateFormater.dateFormat = "yyyy-MM-dd"
     }
 
     @objc private func changeSegmentAction(_ sender: UISegmentedControl) {
@@ -85,7 +88,25 @@ final class MovieViewController: UIViewController {
             movieTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
     }
-}
+    
+//    private func getMovieGenre(indexPath: IndexPath) {
+//        guard let movieId = dataSource?.results[indexPath.row].id else { return }
+//        guard let url =
+//            URL(
+//                string: "https://api.themoviedb.org/3/movie/\(movieId)?api_key=d9e4494907230d135d6f6fd47beca82e&append_to_response=videos"
+//            )
+//        else { return }
+//        let session = URLSession(configuration: .default)
+//       let task = session.dataTask(with: url) { [weak self] data, _, error in
+//           guard let self = self else { return }
+//            if error == nil, let parseData = data {
+//                guard let posts = try? self.decoder.decode([MovieGenreNetwork].self, from: parseData) else { return }
+//            print(posts)
+//            }
+//        }
+//            task.resume()
+//    }
+//}
 
 extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -94,23 +115,35 @@ extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let data = dataSource?.results[indexPath.row]
+
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "AdCell", for: indexPath) as? AdViewCell
-            cell?.setup(name: "banner")
-
+            cell?.setup(name: "adsLogo")
+            cell?.selectionStyle = .none
             return cell ?? UITableViewCell()
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as? MovieViewCell
+            cell?.selectionStyle = .none
+
+            let date = dateFormater.date(from: data?.releaseDate ?? "")
+            dateFormater.dateFormat = "dd MMM yyyy"
 
             let movie = Movies(
                 movieImageName: data?.posterPath ?? "",
                 movieNameText: data?.title ?? "Non",
-                movieDescriptionText: data?.releaseDate ?? "",
+                movieDateText: dateFormater.string(from: date ?? Date()),
                 ratingValue: data?.voteAverage ?? 0
             )
-
+            self.movie = movie
             cell?.setupView(movie: movie)
             return cell ?? UITableViewCell()
         }
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = MoviesDescriptionViewController()
+        let data = dataSource?.results[indexPath.row]
+        vc.data = data
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

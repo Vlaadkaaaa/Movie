@@ -59,8 +59,8 @@ final class AdViewCell: UITableViewCell {
         adImageView.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
         adImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
         adImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
-        adImageView.widthAnchor.constraint(equalToConstant: 350).isActive = true
-        adImageView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        adImageView.widthAnchor.constraint(equalToConstant: 370).isActive = true
+        adImageView.heightAnchor.constraint(equalToConstant: 200).isActive = true
         adLabel.topAnchor.constraint(equalTo: adImageView.topAnchor, constant: 10).isActive = true
         adLabel.leadingAnchor.constraint(equalTo: adImageView.leadingAnchor, constant: 10).isActive = true
         adsScrollView.topAnchor.constraint(equalTo: topAnchor, constant: 0).isActive = true

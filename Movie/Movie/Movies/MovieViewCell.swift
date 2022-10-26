@@ -7,7 +7,7 @@ import UIKit
 final class MovieViewCell: UITableViewCell {
     // MARK: - Private Visual Components
 
-    private let movieImageView: UIImageView = {
+    private let moviePosterImageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.layer.cornerRadius = 10
@@ -23,7 +23,7 @@ final class MovieViewCell: UITableViewCell {
         return label
     }()
 
-    private let genreLabel: UILabel = {
+    private let genreNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
@@ -32,7 +32,7 @@ final class MovieViewCell: UITableViewCell {
         return label
     }()
 
-    private let movieDescriptionLabel: UILabel = {
+    private let movieDateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
@@ -60,10 +60,10 @@ final class MovieViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addSubview(movieImageView)
+        addSubview(moviePosterImageView)
         addSubview(movieNameLabel)
-        addSubview(genreLabel)
-        addSubview(movieDescriptionLabel)
+        addSubview(genreNameLabel)
+        addSubview(movieDateLabel)
         addSubview(movieAgeLabel)
         addSubview(movieRatingImageView)
         configureConstraints()
@@ -75,11 +75,21 @@ final class MovieViewCell: UITableViewCell {
     }
 
     func setupView(movie: Movies) {
-        guard let urlImage = URL(string: "https://image.tmdb.org/t/p/w500" + movie.movieImageName) else { return }
-        guard let image = try? UIImage(data: Data(contentsOf: urlImage)) else { return }
-        movieImageView.image = image
+        DispatchQueue.main.async {
+            guard let urlImage = URL(string: "https://image.tmdb.org/t/p/w500" + movie.movieImageName) else { return }
+            let session = URLSession(configuration: .default)
+            let task = session.dataTask(with: urlImage) { data, _, error in
+                guard let data = data, error == nil else { return }
+                DispatchQueue.main.async {
+                    let image = UIImage(data: data)
+                    self.moviePosterImageView.image = image
+                }
+            }
+            task.resume()
+        }
+
         movieNameLabel.text = movie.movieNameText
-        movieDescriptionLabel.text = movie.movieDescriptionText
+        movieDateLabel.text = movie.movieDateText
         movieRatingImageView.image = {
             switch movie.ratingValue {
             case 0 ... 2: return UIImage(named: "oneStar")
@@ -95,23 +105,26 @@ final class MovieViewCell: UITableViewCell {
     // MARK: Private Methods
 
     private func configureConstraints() {
-        movieImageView.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
-        movieImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-        movieImageView.heightAnchor.constraint(equalToConstant: 150).isActive = true
-        movieImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        movieImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5).isActive = true
+        moviePosterImageView.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
+        moviePosterImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+        moviePosterImageView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        moviePosterImageView.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        moviePosterImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5).isActive = true
         movieNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10).isActive = true
-        movieNameLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 20).isActive = true
-        movieNameLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
-        genreLabel.topAnchor.constraint(equalTo: movieNameLabel.bottomAnchor, constant: 5).isActive = true
-        genreLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 20).isActive = true
-        movieDescriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+        movieNameLabel.leadingAnchor.constraint(equalTo: moviePosterImageView.trailingAnchor, constant: 20)
             .isActive = true
-        movieDescriptionLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
+        movieNameLabel.widthAnchor.constraint(equalToConstant: 260).isActive = true
+        genreNameLabel.topAnchor.constraint(equalTo: movieNameLabel.bottomAnchor, constant: 5).isActive = true
+        genreNameLabel.leadingAnchor.constraint(equalTo: moviePosterImageView.trailingAnchor, constant: 20)
+            .isActive = true
+        movieDateLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+            .isActive = true
+        movieDateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
 
-        movieAgeLabel.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 20).isActive = true
+        movieAgeLabel.leadingAnchor.constraint(equalTo: moviePosterImageView.trailingAnchor, constant: 20)
+            .isActive = true
         movieRatingImageView.topAnchor.constraint(equalTo: movieAgeLabel.bottomAnchor, constant: 0).isActive = true
-        movieRatingImageView.leadingAnchor.constraint(equalTo: movieImageView.trailingAnchor, constant: 15)
+        movieRatingImageView.leadingAnchor.constraint(equalTo: moviePosterImageView.trailingAnchor, constant: 15)
             .isActive = true
         movieRatingImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -200).isActive = true
         movieRatingImageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
