@@ -4,6 +4,8 @@
 import UIKit
 
 final class MoviesDescriptionViewController: UIViewController {
+    // MARK: Private visual Components
+
     lazy var moviePosterImageView: UIImageView = {
         let image = UIImageView(frame: CGRect(x: 0, y: 0, width: 400, height: 500))
 
@@ -12,19 +14,23 @@ final class MoviesDescriptionViewController: UIViewController {
 
     lazy var scrollView: UIScrollView = {
         let scroll = UIScrollView(frame: view.bounds)
-        scroll.contentSize = CGSize(width: view.frame.width, height: view.frame.height * 2)
+        scroll.contentSize = CGSize(width: view.frame.width, height: 1250)
         scroll.addSubview(viewBack)
         return scroll
     }()
 
     lazy var viewBack: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 300, width: 400, height: 1404))
+        let view = UIView(frame: CGRect(x: 0, y: 300, width: 400, height: 1000))
         view.backgroundColor = .black
         view.addSubview(movieNameLabel)
         view.addSubview(ratingLabel)
         view.addSubview(genreLabel)
         view.addSubview(seeMovieButton)
         view.addSubview(tabBarActionView)
+        view.addSubview(actorCollectionView)
+        view.addSubview(actorsLabel)
+        view.addSubview(descriptionLabel)
+        view.addSubview(descriptionTitleLabel)
         return view
     }()
 
@@ -37,20 +43,17 @@ final class MoviesDescriptionViewController: UIViewController {
         return label
     }()
 
-    let ratingLabel: UILabel = {
+    private lazy var ratingLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "7.8"
         label.font = .boldSystemFont(ofSize: 14)
         label.textAlignment = .center
-        label.textColor = .lightGray
         return label
     }()
 
     let genreLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "2017, триллер, драмма"
         label.font = .systemFont(ofSize: 14)
         label.textAlignment = .center
         label.textColor = .lightGray
@@ -63,6 +66,50 @@ final class MoviesDescriptionViewController: UIViewController {
         button.setBackgroundImage(UIImage(named: "waths"), for: .normal)
         return button
     }()
+
+    private lazy var actorCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        layout.itemSize = CGSize(width: 150, height: 300)
+        layout.scrollDirection = .horizontal
+
+        let collectionView = UICollectionView(frame: CGRect(), collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.contentSize = CGSize(width: 1000, height: 300)
+        collectionView.register(ActorCollectionViewCell.self, forCellWithReuseIdentifier: "ActorCell")
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        return collectionView
+    }()
+
+    private let actorsLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Актеры"
+        label.font = .boldSystemFont(ofSize: 18)
+        return label
+    }()
+
+    private let descriptionTitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .boldSystemFont(ofSize: 18)
+        label.text = "Описание"
+        return label
+    }()
+
+    private let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 15)
+        label.numberOfLines = 0
+        return label
+    }()
+
+    // MARK: Property
+
+    private var genres = ""
 
     private let tabBarActionView: UIView = {
         let view = UIView()
@@ -140,6 +187,8 @@ final class MoviesDescriptionViewController: UIViewController {
 
     private let dateFormater = DateFormatter()
     var data: Results?
+    var genre = ""
+    private var actors: [Cast] = []
 
     // MARK: - Lyfe Cycle
 
@@ -156,7 +205,7 @@ final class MoviesDescriptionViewController: UIViewController {
 
     private func setupUI(data: Results?) {
         guard let dataPosterImage = data?.posterPath,
-              let dataRating = data?.voteAverage, let dataReleaseDate = data?.releaseDate
+              let dataRating = data?.voteAverage, let dataReleaseDate = data?.releaseDate, let movieId = data?.id
         else { return }
         DispatchQueue.main.async {
             guard let urlImage = URL(string: "https://image.tmdb.org/t/p/w500" + dataPosterImage) else { return }
@@ -170,11 +219,65 @@ final class MoviesDescriptionViewController: UIViewController {
             }
             task.resume()
         }
+        DispatchQueue.main.async {
+            guard let url =
+                URL(
+                    string: "https://api.themoviedb.org/3/movie/\(movieId)?api_key=d9e4494907230d135d6f6fd47beca82e&append_to_response=videos&language=ru"
+                )
+            else { return }
+            let session = URLSession.shared
+            let decoder = JSONDecoder()
+            let task = session.dataTask(with: url) { data, _, error in
+                if error == nil, let parseData = data {
+                    guard let genre = try? decoder.decode(MovieGenreNetwork.self, from: parseData) else { return }
+                    self.genres = ""
+                    for genre in genre.genres {
+                        if self.genres.isEmpty {
+                            self.genres += genre.name
+                        } else {
+                            self.genres += ", " + genre.name
+                        }
+                        DispatchQueue.main.async {
+                            let date = self.dateFormater.date(from: dataReleaseDate)
+                            self.dateFormater.dateFormat = "yyyy"
+                            self.genreLabel.text = self.dateFormater.string(from: date ?? Date()) + ", " + self.genres
+                        }
+                    }
+                }
+            }
+            task.resume()
+        }
         movieNameLabel.text = data?.title
         ratingLabel.text = String(dataRating)
-        let date = dateFormater.date(from: dataReleaseDate)
-        dateFormater.dateFormat = "yyyy"
-        genreLabel.text = dateFormater.string(from: date ?? Date()) + ", триллер, драмма"
+        descriptionLabel.text = data?.overview
+        ratingLabel.textColor = {
+            guard let rating = Double(ratingLabel.text ?? "") else { return .lightGray }
+            switch rating {
+            case 5 ..< 7: return .lightGray
+            case 7 ... 10: return .green
+            default: return .systemRed
+            }
+        }()
+        DispatchQueue.main.async {
+            guard let url =
+                URL(
+                    string: "https://api.themoviedb.org/3/movie/\(movieId)/credits?api_key=d9e4494907230d135d6f6fd47beca82e"
+                )
+            else { return }
+            let session = URLSession.shared
+            let decoder = JSONDecoder()
+            let task = session.dataTask(with: url) { data, _, error in
+                if error == nil, let parseData = data {
+                    guard let desription = try? decoder.decode(MoviewDescriptionNetwork.self, from: parseData)
+                    else { return }
+                    DispatchQueue.main.async {
+                        self.actors = desription.cast
+                        self.actorCollectionView.reloadData()
+                    }
+                }
+            }
+            task.resume()
+        }
     }
 
     private func configureConstraint() {
@@ -182,7 +285,7 @@ final class MoviesDescriptionViewController: UIViewController {
             movieNameLabel.topAnchor.constraint(equalTo: viewBack.topAnchor, constant: 25),
             movieNameLabel.widthAnchor.constraint(equalToConstant: viewBack.frame.width - 100),
             movieNameLabel.centerXAnchor.constraint(equalTo: viewBack.centerXAnchor, constant: 0),
-            ratingLabel.topAnchor.constraint(equalTo: movieNameLabel.bottomAnchor, constant: 30),
+            ratingLabel.topAnchor.constraint(equalTo: movieNameLabel.bottomAnchor, constant: 15),
             ratingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
             genreLabel.topAnchor.constraint(equalTo: ratingLabel.bottomAnchor, constant: 5),
             genreLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
@@ -191,7 +294,44 @@ final class MoviesDescriptionViewController: UIViewController {
             seeMovieButton.heightAnchor.constraint(equalToConstant: 70),
             seeMovieButton.widthAnchor.constraint(equalToConstant: 250),
             tabBarActionView.topAnchor.constraint(equalTo: seeMovieButton.bottomAnchor, constant: 70),
-            tabBarActionView.leadingAnchor.constraint(equalTo: viewBack.leadingAnchor, constant: 60)
+            tabBarActionView.leadingAnchor.constraint(equalTo: viewBack.leadingAnchor, constant: 60),
+            actorsLabel.topAnchor.constraint(equalTo: tabBarActionView.bottomAnchor, constant: 20),
+            actorsLabel.leadingAnchor.constraint(equalTo: viewBack.leadingAnchor, constant: 20),
+            actorCollectionView.topAnchor.constraint(equalTo: tabBarActionView.bottomAnchor, constant: 50),
+            actorCollectionView.leadingAnchor.constraint(equalTo: viewBack.leadingAnchor, constant: 0),
+            actorCollectionView.trailingAnchor.constraint(equalTo: viewBack.trailingAnchor, constant: 0),
+            actorCollectionView.heightAnchor.constraint(equalToConstant: 300),
+            actorCollectionView.widthAnchor.constraint(equalToConstant: viewBack.frame.width),
+            descriptionTitleLabel.topAnchor.constraint(equalTo: actorCollectionView.bottomAnchor, constant: 0),
+            descriptionTitleLabel.leadingAnchor.constraint(equalTo: viewBack.leadingAnchor, constant: 20),
+            descriptionLabel.topAnchor.constraint(equalTo: descriptionTitleLabel.bottomAnchor, constant: 10),
+            descriptionLabel.leadingAnchor.constraint(equalTo: viewBack.leadingAnchor, constant: 20),
+            descriptionLabel.widthAnchor.constraint(equalToConstant: 360)
         ])
+    }
+}
+
+// MARK: - UICollectionViewDataSource, UICollectionViewDelegate
+
+extension MoviesDescriptionViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        actors.count
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        guard let cell = collectionView
+            .dequeueReusableCell(withReuseIdentifier: "ActorCell", for: indexPath) as? ActorCollectionViewCell
+        else { return UICollectionViewCell() }
+        let actor = actors[indexPath.row]
+        let actors = Actor(
+            actorImageName: actor.profilePath ?? "",
+            actorName: actor.name,
+            actorRoleName: actor.character
+        )
+        cell.setupUI(actror: actors)
+        return cell
     }
 }

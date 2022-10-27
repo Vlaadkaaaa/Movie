@@ -6,8 +6,8 @@ import Foundation
 ///
 struct Movies {
     var movieImageName: String
+    var movieGenreName: String
     var movieNameText: String
     var movieDateText: String
     var ratingValue: Double
-    var movieDescriptionText: String?
 }

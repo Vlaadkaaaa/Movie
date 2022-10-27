@@ -23,7 +23,7 @@ struct Results: Codable {
     let adult: Bool
     let backdropPath: String
     let genreIds: [Int]
-     let id: Int
+    let id: Int
     let originalLanguage: String
     let originalTitle: String
     let overview: String
@@ -39,7 +39,7 @@ struct Results: Codable {
         case adult
         case backdropPath = "backdrop_path"
         case genreIds = "genre_ids"
-         case id
+        case id
         case originalLanguage = "original_language"
         case originalTitle = "original_title"
         case overview

@@ -1,9 +1,5 @@
-//
-//  MoviesGenreNetwork.swift
-//  Movie
-//
-//  Created by Владислав Лымарь on 26.10.2022.
-//
+// MoviesGenreNetwork.swift
+// Copyright © RoadMap. All rights reserved.
 
 import Foundation
 

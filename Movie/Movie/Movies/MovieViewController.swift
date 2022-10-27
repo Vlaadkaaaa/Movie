@@ -1,8 +1,8 @@
 // MovieViewController.swift
 // Copyright © RoadMap. All rights reserved.
 
+import Foundation
 import UIKit
-
 ///
 final class MovieViewController: UIViewController {
     // MARK: - Private Visual Component
@@ -27,6 +27,7 @@ final class MovieViewController: UIViewController {
     private var dataSource: MoviesNetwork?
     private let dateFormater = DateFormatter()
     private var movie: Movies?
+    private var genres = ""
 
     // MARK: - Lyfe Cycle
 
@@ -88,25 +89,32 @@ final class MovieViewController: UIViewController {
             movieTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
     }
-    
-//    private func getMovieGenre(indexPath: IndexPath) {
-//        guard let movieId = dataSource?.results[indexPath.row].id else { return }
-//        guard let url =
-//            URL(
-//                string: "https://api.themoviedb.org/3/movie/\(movieId)?api_key=d9e4494907230d135d6f6fd47beca82e&append_to_response=videos"
-//            )
-//        else { return }
-//        let session = URLSession(configuration: .default)
-//       let task = session.dataTask(with: url) { [weak self] data, _, error in
-//           guard let self = self else { return }
-//            if error == nil, let parseData = data {
-//                guard let posts = try? self.decoder.decode([MovieGenreNetwork].self, from: parseData) else { return }
-//            print(posts)
-//            }
-//        }
-//            task.resume()
-//    }
-//}
+
+    private func getMovieGenre(data: Results?) {
+        guard let movieId = data?.id else { return }
+        guard let url =
+            URL(
+                string: "https://api.themoviedb.org/3/movie/\(movieId)?api_key=d9e4494907230d135d6f6fd47beca82e&append_to_response=videos&language=ru"
+            )
+        else { return }
+        let session = URLSession.shared
+        let task = session.dataTask(with: url) { data, _, error in
+            if error == nil, let parseData = data {
+                guard let genre = try? JSONDecoder().decode(MovieGenreNetwork.self, from: parseData) else { return }
+                self.genres = ""
+                for genre in genre.genres {
+                    if self.genres.isEmpty {
+                        self.genres += genre.name
+                    } else {
+                        self.genres += ", " + genre.name
+                    }
+                }
+            }
+        }
+
+        task.resume()
+    }
+}
 
 extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -127,9 +135,11 @@ extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
 
             let date = dateFormater.date(from: data?.releaseDate ?? "")
             dateFormater.dateFormat = "dd MMM yyyy"
+            getMovieGenre(data: data)
 
             let movie = Movies(
                 movieImageName: data?.posterPath ?? "",
+                movieGenreName: genres,
                 movieNameText: data?.title ?? "Non",
                 movieDateText: dateFormater.string(from: date ?? Date()),
                 ratingValue: data?.voteAverage ?? 0

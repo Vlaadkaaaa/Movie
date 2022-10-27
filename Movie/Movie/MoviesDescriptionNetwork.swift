@@ -4,15 +4,16 @@
 import Foundation
 
 ///
-struct MoviewDescriptionNetwork {
+struct MoviewDescriptionNetwork: Codable {
     let id: Int
     let cast: [Cast]
+    let crew: [Crew]
 }
 
 ///
-struct Cast {
+struct Cast: Codable {
     let name: String
-    let profilePath: String
+    let profilePath: String?
     let character: String
 
     enum CodingKeys: String, CodingKey {
@@ -21,3 +22,6 @@ struct Cast {
         case character
     }
 }
+
+///
+struct Crew: Codable {}

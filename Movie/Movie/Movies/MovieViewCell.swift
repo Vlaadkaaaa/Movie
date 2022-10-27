@@ -28,7 +28,6 @@ final class MovieViewCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 16)
-        label.text = "Комедия, триллер"
         return label
     }()
 
@@ -87,7 +86,7 @@ final class MovieViewCell: UITableViewCell {
             }
             task.resume()
         }
-
+        genreNameLabel.text = movie.movieGenreName
         movieNameLabel.text = movie.movieNameText
         movieDateLabel.text = movie.movieDateText
         movieRatingImageView.image = {
