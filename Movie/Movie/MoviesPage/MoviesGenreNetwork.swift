@@ -10,5 +10,5 @@ struct MovieGenreNetwork: Codable {
 
 /// Genres
 struct Genres: Codable {
-    var name: String
+    let name: String
 }

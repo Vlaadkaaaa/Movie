@@ -226,7 +226,7 @@ final class MoviesDescriptionViewController: UIViewController {
               let dataRating = data?.voteAverage, let dataReleaseDate = data?.releaseDate, let movieId = data?.id
         else { return }
         guard let urlImage = URL(string: Constants.imageRequestURL + dataPosterImage) else { return }
-        let session = URLSession(configuration: .default)
+        let session = URLSession.shared
         let task = session.dataTask(with: urlImage) { data, _, error in
             guard let data = data, error == nil else { return }
             DispatchQueue.main.async {
@@ -241,11 +241,9 @@ final class MoviesDescriptionViewController: UIViewController {
                 string: "https://api.themoviedb.org/3/movie/\(movieId)?api_key=d9e4494907230d135d6f6fd47beca82e&append_to_response=videos&language=ru"
             )
         else { return }
-        let sessionGenre = URLSession.shared
-        let decoder = JSONDecoder()
-        let taskGenre = sessionGenre.dataTask(with: url) { data, _, error in
+        let taskGenre = session.dataTask(with: url) { data, _, error in
             if error == nil, let parseData = data {
-                guard let genre = try? decoder.decode(MovieGenreNetwork.self, from: parseData) else { return }
+                guard let genre = try? JSONDecoder().decode(MovieGenreNetwork.self, from: parseData) else { return }
                 self.genres = String()
                 for genre in genre.genres {
                     if self.genres.isEmpty {

@@ -5,9 +5,9 @@ import Foundation
 
 /// Movies
 struct Movies {
-    var movieImageName: String
-    var movieGenreName: String
-    var movieNameText: String
-    var movieDateText: String
-    var ratingValue: Double
+    let movieImageName: String
+    let movieGenreName: String
+    let movieNameText: String
+    let movieDateText: String
+    let ratingValue: Double
 }

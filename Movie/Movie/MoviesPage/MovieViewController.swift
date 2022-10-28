@@ -51,6 +51,8 @@ final class MovieViewController: UIViewController {
     // MARK: Private Methods
 
     private func setupUI() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.tintColor = .white
         title = Constants.movieTitleText
         view.addSubview(filtherMovieSegmentControl)
         view.addSubview(movieTableView)
@@ -61,6 +63,20 @@ final class MovieViewController: UIViewController {
         addContraint()
         getMovies(genre: Constants.genres[0])
         dateFormater.dateFormat = Constants.resultDateFormat
+        setupRefreshControl()
+    }
+
+    private func setupRefreshControl() {
+        let refresh = UIRefreshControl()
+        refresh.addTarget(self, action: #selector(refreshPageAction), for: .valueChanged)
+        movieTableView.refreshControl = refresh
+    }
+
+    @objc private func refreshPageAction() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.movieTableView.reloadData()
+            self.movieTableView.refreshControl?.endRefreshing()
+        }
     }
 
     private func getMovies(genre: String) {
@@ -79,7 +95,7 @@ final class MovieViewController: UIViewController {
 
     private func addContraint() {
         NSLayoutConstraint.activate([
-            filtherMovieSegmentControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            filtherMovieSegmentControl.topAnchor.constraint(equalTo: view.topAnchor, constant: 150),
             filtherMovieSegmentControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             filtherMovieSegmentControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             movieTableView.topAnchor.constraint(equalTo: filtherMovieSegmentControl.bottomAnchor, constant: 20),
@@ -88,6 +104,8 @@ final class MovieViewController: UIViewController {
             movieTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
     }
+
+    @objc private func refreshAction() {}
 
     private func getMovieGenre(data: Results?) {
         guard let movieId = data?.id else { return }
