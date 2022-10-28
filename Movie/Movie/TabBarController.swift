@@ -24,12 +24,12 @@ final class TabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        showTabBar()
+        showMoviesTabBar()
     }
 
     // MARK: Private Methods
 
-    private func showTabBar() {
+    private func showMoviesTabBar() {
         let movieNavController = UINavigationController(rootViewController: movieVC)
         let personNavController = UINavigationController(rootViewController: personVC)
         setViewControllers([movieNavController, personNavController], animated: true)

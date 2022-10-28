@@ -3,12 +3,18 @@
 
 import UIKit
 
+/// Настройка  Актеров
 final class ActorCollectionViewCell: UICollectionViewCell {
-    // MARK: Visual Components
+    // MARK: Private Constant
+
+    private enum Constants {
+        static let getImageURL = "https://image.tmdb.org/t/p/w500"
+    }
+
+    // MARK: - Private Visual Components
 
     private let actorImageView: UIImageView = {
         let image = UIImageView(frame: CGRect(x: 5, y: 5, width: 140, height: 190))
-
         return image
     }()
 
@@ -29,7 +35,9 @@ final class ActorCollectionViewCell: UICollectionViewCell {
         return label
     }()
 
-    override init(frame: CGRect) {
+    // MARK: - Init
+
+    override private init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(actorImageView)
         addSubview(actorNameLabel)
@@ -43,19 +51,19 @@ final class ActorCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Metods
+
     func setupUI(actror: Actor) {
-        DispatchQueue.main.async {
-            guard let urlImage = URL(string: "https://image.tmdb.org/t/p/w500" + actror.actorImageName) else { return }
-            let session = URLSession(configuration: .default)
-            let task = session.dataTask(with: urlImage) { data, _, error in
-                guard let data = data, error == nil else { return }
-                DispatchQueue.main.async {
-                    let image = UIImage(data: data)
-                    self.actorImageView.image = image
-                }
+        guard let urlImage = URL(string: Constants.getImageURL + actror.actorImageName) else { return }
+        let session = URLSession(configuration: .default)
+        let task = session.dataTask(with: urlImage) { data, _, error in
+            guard let data = data, error == nil else { return }
+            DispatchQueue.main.async {
+                let image = UIImage(data: data)
+                self.actorImageView.image = image
             }
-            task.resume()
         }
+        task.resume()
         actorNameLabel.text = actror.actorName
         actorRoleLabel.text = actror.actorRoleName
     }

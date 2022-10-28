@@ -3,7 +3,7 @@
 
 import Foundation
 
-///
+/// Actor
 struct Actor {
     let actorImageName: String
     let actorName: String

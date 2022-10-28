@@ -1,33 +1,45 @@
 // MovieViewController.swift
 // Copyright © RoadMap. All rights reserved.
 
-import Foundation
 import UIKit
-///
+
 final class MovieViewController: UIViewController {
+    // MARK: Private Costants
+
+    private enum Constants {
+        static let itemsSegmentControl = ["Популярное", "Ожидаемые", "Лучшие"]
+        static let movieTitleText = "Фильмы"
+        static let movieCellIdentifier = "MovieCell"
+        static let adCellIdentifier = "AdCell"
+        static let genres = ["popular", "upcoming"]
+        static let resultDateFormat = "yyyy-MM-dd"
+        static let editDateFormat = "dd MMM yyyy"
+        static let adImageName = "adsLogo"
+    }
+
     // MARK: - Private Visual Component
 
     private lazy var filtherMovieSegmentControl: UISegmentedControl = {
-        let segment = UISegmentedControl(items: ["Популярное", "Ожидаемые", "Лучшие"])
+        let segment = UISegmentedControl(items: Constants.itemsSegmentControl)
         segment.translatesAutoresizingMaskIntoConstraints = false
         segment.selectedSegmentIndex = 0
         segment.addTarget(self, action: #selector(changeSegmentAction), for: .valueChanged)
         return segment
     }()
 
-    private lazy var movieTableView: UITableView = {
+    private let movieTableView: UITableView = {
         let table = UITableView(frame: CGRect(), style: .plain)
         table.translatesAutoresizingMaskIntoConstraints = false
         return table
     }()
 
-    // MARK: Proivate Property
+    // MARK: Private Property
 
-    private var networkManager = NetworkManager()
-    private var dataSource: MoviesNetwork?
     private let dateFormater = DateFormatter()
+    private var networkManager = NetworkManager()
+    private var moviewDataSource: MoviesNetwork?
     private var movie: Movies?
-    private var genres = ""
+    private var genres = String()
 
     // MARK: - Lyfe Cycle
 
@@ -39,36 +51,23 @@ final class MovieViewController: UIViewController {
     // MARK: Private Methods
 
     private func setupUI() {
-        title = "Фильмы"
+        title = Constants.movieTitleText
         view.addSubview(filtherMovieSegmentControl)
         view.addSubview(movieTableView)
         movieTableView.delegate = self
         movieTableView.dataSource = self
-        movieTableView.register(MovieViewCell.self, forCellReuseIdentifier: "MovieCell")
-        movieTableView.register(AdViewCell.self, forCellReuseIdentifier: "AdCell")
+        movieTableView.register(MovieViewCell.self, forCellReuseIdentifier: Constants.movieCellIdentifier)
+        movieTableView.register(AdViewCell.self, forCellReuseIdentifier: Constants.adCellIdentifier)
         addContraint()
-        getMovies(genre: "popular")
-        dateFormater.dateFormat = "yyyy-MM-dd"
-    }
-
-    @objc private func changeSegmentAction(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            getMovies(genre: "popular")
-        case 1:
-            getMovies(genre: "upcoming")
-        case 2:
-            getMovies(genre: "people")
-        default:
-            getMovies(genre: "popular")
-        }
+        getMovies(genre: Constants.genres[0])
+        dateFormater.dateFormat = Constants.resultDateFormat
     }
 
     private func getMovies(genre: String) {
         networkManager.getMovies(genre: genre) { [weak self] result in
             switch result {
             case let .success(movies):
-                self?.dataSource = movies
+                self?.moviewDataSource = movies
                 DispatchQueue.main.async {
                     self?.movieTableView.reloadData()
                 }
@@ -101,7 +100,7 @@ final class MovieViewController: UIViewController {
         let task = session.dataTask(with: url) { data, _, error in
             if error == nil, let parseData = data {
                 guard let genre = try? JSONDecoder().decode(MovieGenreNetwork.self, from: parseData) else { return }
-                self.genres = ""
+                self.genres = String()
                 for genre in genre.genres {
                     if self.genres.isEmpty {
                         self.genres += genre.name
@@ -111,38 +110,53 @@ final class MovieViewController: UIViewController {
                 }
             }
         }
-
         task.resume()
+    }
+
+    @objc private func changeSegmentAction(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            getMovies(genre: Constants.genres[0])
+        default:
+            getMovies(genre: Constants.genres[1])
+        }
     }
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
+
 extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        (dataSource?.results.count ?? 0) + 1
+        moviewDataSource?.results.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let data = dataSource?.results[indexPath.row]
-
+        let data = moviewDataSource?.results[indexPath.row]
         if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "AdCell", for: indexPath) as? AdViewCell
-            cell?.setup(name: "adsLogo")
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: Constants.adCellIdentifier,
+                for: indexPath
+            ) as? AdViewCell
+            cell?.setupUI(name: Constants.adImageName)
             cell?.selectionStyle = .none
             return cell ?? UITableViewCell()
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as? MovieViewCell
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: Constants.movieCellIdentifier,
+                for: indexPath
+            ) as? MovieViewCell
             cell?.selectionStyle = .none
-
-            let date = dateFormater.date(from: data?.releaseDate ?? "")
-            dateFormater.dateFormat = "dd MMM yyyy"
+            guard let dataRelease = data?.releaseDate, let dataPosterPath = data?.posterPath,
+                  let dataTitle = data?.title, let dataVoteAverange = data?.voteAverage else { fatalError() }
+            let date = dateFormater.date(from: dataRelease)
+            dateFormater.dateFormat = Constants.editDateFormat
             getMovieGenre(data: data)
-
             let movie = Movies(
-                movieImageName: data?.posterPath ?? "",
+                movieImageName: dataPosterPath,
                 movieGenreName: genres,
-                movieNameText: data?.title ?? "Non",
+                movieNameText: dataTitle,
                 movieDateText: dateFormater.string(from: date ?? Date()),
-                ratingValue: data?.voteAverage ?? 0
+                ratingValue: dataVoteAverange
             )
             self.movie = movie
             cell?.setupView(movie: movie)
@@ -152,7 +166,7 @@ extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = MoviesDescriptionViewController()
-        let data = dataSource?.results[indexPath.row]
+        let data = moviewDataSource?.results[indexPath.row]
         vc.data = data
         navigationController?.pushViewController(vc, animated: true)
     }

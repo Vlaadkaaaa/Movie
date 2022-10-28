@@ -7,7 +7,6 @@ import Foundation
 struct MoviewDescriptionNetwork: Codable {
     let id: Int
     let cast: [Cast]
-    let crew: [Crew]
 }
 
 ///
@@ -22,6 +21,3 @@ struct Cast: Codable {
         case character
     }
 }
-
-///
-struct Crew: Codable {}

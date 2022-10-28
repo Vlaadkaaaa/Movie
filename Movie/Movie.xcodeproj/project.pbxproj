@@ -61,7 +61,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		55643E982907CC210058B3A8 /* Movies */ = {
+		55076236290BDD92002BBFDD /* DetailMoviePage */ = {
+			isa = PBXGroup;
+			children = (
+				55B474F4290939DA00955188 /* MoviesDescriptionNetwork.swift */,
+				55BDFAC529093C480086B2DA /* MoviesDescriptionViewController.swift */,
+				55076234290A5F19002BBFDD /* ActorCollectionViewCell.swift */,
+				55076232290A596F002BBFDD /* Actor.swift */,
+			);
+			path = DetailMoviePage;
+			sourceTree = "<group>";
+		};
+		55643E982907CC210058B3A8 /* MoviesPage */ = {
 			isa = PBXGroup;
 			children = (
 				55643E862906A57F0058B3A8 /* MovieViewController.swift */,
@@ -69,8 +80,9 @@
 				550762302909A2FD002BBFDD /* MoviesGenreNetwork.swift */,
 				55643E8A2906C8940058B3A8 /* MovieViewCell.swift */,
 				55643E962907C8DA0058B3A8 /* Movies.swift */,
+				55643E8C2906CC1D0058B3A8 /* AdViewCell.swift */,
 			);
-			path = Movies;
+			path = MoviesPage;
 			sourceTree = "<group>";
 		};
 		55B2AA8829069D6B009F0BD7 = {
@@ -95,13 +107,9 @@
 				55B2AA9429069D6B009F0BD7 /* AppDelegate.swift */,
 				55B2AA9629069D6B009F0BD7 /* SceneDelegate.swift */,
 				55B2AA9829069D6B009F0BD7 /* TabBarController.swift */,
-				55B474F4290939DA00955188 /* MoviesDescriptionNetwork.swift */,
-				55BDFAC529093C480086B2DA /* MoviesDescriptionViewController.swift */,
-				55076234290A5F19002BBFDD /* ActorCollectionViewCell.swift */,
-				55076232290A596F002BBFDD /* Actor.swift */,
-				55643E982907CC210058B3A8 /* Movies */,
+				55076236290BDD92002BBFDD /* DetailMoviePage */,
+				55643E982907CC210058B3A8 /* MoviesPage */,
 				55643E942907BB1E0058B3A8 /* NetworkManager.swift */,
-				55643E8C2906CC1D0058B3A8 /* AdViewCell.swift */,
 				55643E882906AF050058B3A8 /* PersonViewController.swift */,
 				55B2AA9A29069D6B009F0BD7 /* Main.storyboard */,
 				55B2AA9D29069D71009F0BD7 /* Assets.xcassets */,

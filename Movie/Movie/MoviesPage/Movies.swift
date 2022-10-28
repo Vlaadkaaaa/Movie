@@ -3,7 +3,7 @@
 
 import Foundation
 
-///
+/// Movies
 struct Movies {
     var movieImageName: String
     var movieGenreName: String

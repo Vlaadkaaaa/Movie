@@ -3,13 +3,12 @@
 
 import Foundation
 
-///
+/// GetMoviesResult
 enum GetMoviesResult {
     case success(movies: MoviesNetwork)
     case failure(error: Error)
 }
 
-///
 final class NetworkManager {
     private let session = URLSession.shared
     private let decoder = JSONDecoder()
