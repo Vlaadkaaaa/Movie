@@ -3,13 +3,13 @@
 
 import Foundation
 
-///
+/// Модель массив актеров
 struct MoviewDescriptionNetwork: Codable {
     let id: Int
     let cast: [Cast]
 }
 
-///
+/// Модель  актеры
 struct Cast: Codable {
     let name: String
     let profilePath: String?

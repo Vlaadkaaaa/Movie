@@ -3,7 +3,7 @@
 
 import Foundation
 
-/// MoviesNetwork
+///  Страницы с фильмами
 struct MoviesNetwork: Codable {
     let page: Int
     let results: [Results]
@@ -18,7 +18,7 @@ struct MoviesNetwork: Codable {
     }
 }
 
-// Results
+// Массив фильмов
 struct Results: Codable {
     let id: Int
     let overview: String

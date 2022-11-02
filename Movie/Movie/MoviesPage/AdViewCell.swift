@@ -39,10 +39,10 @@ final class AdViewCell: UITableViewCell {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError("")
     }
 
-    // MARK: - Method
+    // MARK: - Public Method
 
     func setupUI(name: String) {
         adImageView.image = UIImage(named: name)

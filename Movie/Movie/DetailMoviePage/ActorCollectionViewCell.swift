@@ -39,6 +39,17 @@ final class ActorCollectionViewCell: UICollectionViewCell {
 
     override private init(frame: CGRect) {
         super.init(frame: frame)
+        setupUI()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("")
+    }
+
+    // MARK: - Private Metods
+
+    private func setupUI() {
         addSubview(actorImageView)
         addSubview(actorNameLabel)
         addSubview(actorRoleLabel)
@@ -46,15 +57,10 @@ final class ActorCollectionViewCell: UICollectionViewCell {
         actorImageView.clipsToBounds = true
     }
 
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    // MARK: - Public Metods
 
-    // MARK: - Metods
-
-    func setupUI(actror: Actor) {
-        guard let urlImage = URL(string: Constants.getImageURL + actror.actorImageName) else { return }
+    func setupActor(_ actror: Actor) {
+        guard let urlImage = URL(string: "\(Constants.getImageURL) \(actror.actorImageName)") else { return }
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: urlImage) { data, _, error in
             guard let data = data, error == nil else { return }

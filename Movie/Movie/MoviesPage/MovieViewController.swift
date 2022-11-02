@@ -3,11 +3,12 @@
 
 import UIKit
 
+/// Главная страница со списком фильмов
 final class MovieViewController: UIViewController {
     // MARK: Private Costants
 
     private enum Constants {
-        static let itemsSegmentControl = ["Популярное", "Ожидаемые", "Лучшие"]
+        static let segmentControlItems = ["Популярное", "Ожидаемые", "Лучшие"]
         static let movieTitleText = "Фильмы"
         static let movieCellIdentifier = "MovieCell"
         static let adCellIdentifier = "AdCell"
@@ -15,12 +16,16 @@ final class MovieViewController: UIViewController {
         static let resultDateFormat = "yyyy-MM-dd"
         static let editDateFormat = "dd MMM yyyy"
         static let adImageName = "adsLogo"
+        static let apiRequestURL = "https://api.themoviedb.org/3/movie/"
+        static let apiKeyURL = "api_key=d9e4494907230d135d6f6fd47beca82e"
+        static let apiLanguageURL = "language=ru"
+        static let appendResponseVideosURL = "append_to_response=videos"
     }
 
     // MARK: - Private Visual Component
 
     private lazy var filtherMovieSegmentControl: UISegmentedControl = {
-        let segment = UISegmentedControl(items: Constants.itemsSegmentControl)
+        let segment = UISegmentedControl(items: Constants.segmentControlItems)
         segment.translatesAutoresizingMaskIntoConstraints = false
         segment.selectedSegmentIndex = 0
         segment.addTarget(self, action: #selector(changeSegmentAction), for: .valueChanged)
@@ -54,18 +59,21 @@ final class MovieViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.tintColor = .white
         title = Constants.movieTitleText
+        dateFormater.dateFormat = Constants.resultDateFormat
         view.addSubview(filtherMovieSegmentControl)
+        getMovies(genre: Constants.genres[0])
+        setupRefreshControl()
+        setupMovieTableView()
+    }
+
+    private func setupMovieTableView() {
         view.addSubview(movieTableView)
         movieTableView.delegate = self
         movieTableView.dataSource = self
         movieTableView.register(MovieViewCell.self, forCellReuseIdentifier: Constants.movieCellIdentifier)
         movieTableView.register(AdViewCell.self, forCellReuseIdentifier: Constants.adCellIdentifier)
         addContraint()
-        getMovies(genre: Constants.genres[0])
-        dateFormater.dateFormat = Constants.resultDateFormat
-        setupRefreshControl()
     }
-
     private func setupRefreshControl() {
         let refresh = UIRefreshControl()
         refresh.addTarget(self, action: #selector(refreshPageAction), for: .valueChanged)
@@ -82,13 +90,15 @@ final class MovieViewController: UIViewController {
     private func getMovies(genre: String) {
         networkManager.getMovies(genre: genre) { [weak self] result in
             switch result {
-            case let .success(movies):
+            case let .successMovies(movies):
                 self?.moviewDataSource = movies
                 DispatchQueue.main.async {
                     self?.movieTableView.reloadData()
                 }
             case let .failure(error):
                 print(error)
+            default:
+                break
             }
         }
     }
@@ -105,14 +115,13 @@ final class MovieViewController: UIViewController {
         ])
     }
 
-    @objc private func refreshAction() {}
-
     private func getMovieGenre(data: Results?) {
-        guard let movieId = data?.id else { return }
-        guard let url =
-            URL(
-                string: "https://api.themoviedb.org/3/movie/\(movieId)?api_key=d9e4494907230d135d6f6fd47beca82e&append_to_response=videos&language=ru"
-            )
+        guard let movieId = data?.id,
+              let url =
+              URL(
+                  string: "\(Constants.apiRequestURL)\(movieId)?\(Constants.apiKeyURL)&" +
+                      "\(Constants.appendResponseVideosURL)&\(Constants.apiLanguageURL)"
+              )
         else { return }
         let session = URLSession.shared
         let task = session.dataTask(with: url) { data, _, error in
@@ -164,8 +173,10 @@ extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
                 for: indexPath
             ) as? MovieViewCell
             cell?.selectionStyle = .none
-            guard let dataRelease = data?.releaseDate, let dataPosterPath = data?.posterPath,
-                  let dataTitle = data?.title, let dataVoteAverange = data?.voteAverage else { fatalError() }
+            guard let dataRelease = data?.releaseDate,
+                  let dataPosterPath = data?.posterPath,
+                  let dataTitle = data?.title,
+                  let dataVoteAverange = data?.voteAverage else { fatalError() }
             let date = dateFormater.date(from: dataRelease)
             dateFormater.dateFormat = Constants.editDateFormat
             getMovieGenre(data: data)

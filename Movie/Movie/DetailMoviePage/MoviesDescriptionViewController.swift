@@ -3,6 +3,7 @@
 
 import UIKit
 
+/// Страница конкретного фильма
 final class MoviesDescriptionViewController: UIViewController {
     // MARK: Private Constant
 
@@ -23,14 +24,16 @@ final class MoviesDescriptionViewController: UIViewController {
         static let shareTitleText = "Поделиться"
         static let moreTitleText = "Ещё"
         static let imageRequestURL = "https://image.tmdb.org/t/p/w500"
+        static let apiRequestURL = "https://api.themoviedb.org/3/movie/"
+        static let apiKeyURL = "api_key=d9e4494907230d135d6f6fd47beca82e"
+        static let apiLanguageURL = "language=ru"
+        static let apiResponseURL = "append_to_response=videos"
+        static let apiCreditsGenreURL = "credits"
     }
 
     // MARK: Private visual Components
 
-    private let moviePosterImageView: UIImageView = {
-        let image = UIImageView(frame: CGRect(x: 0, y: 0, width: 400, height: 500))
-        return image
-    }()
+    private let moviePosterImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 400, height: 500))
 
     private lazy var contentScrollView: UIScrollView = {
         let scroll = UIScrollView(frame: view.bounds)
@@ -89,11 +92,7 @@ final class MoviesDescriptionViewController: UIViewController {
     }()
 
     private lazy var actorCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        layout.itemSize = CGSize(width: 150, height: 250)
-        layout.scrollDirection = .horizontal
-        let collectionView = UICollectionView(frame: CGRect(), collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: CGRect(), collectionViewLayout: actorCollectionViewLayout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.contentSize = CGSize(width: 1000, height: 250)
@@ -101,6 +100,14 @@ final class MoviesDescriptionViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         return collectionView
+    }()
+
+    private let actorCollectionViewLayout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        layout.itemSize = CGSize(width: 150, height: 250)
+        layout.scrollDirection = .horizontal
+        return layout
     }()
 
     private let actorsLabel: UILabel = {
@@ -199,10 +206,11 @@ final class MoviesDescriptionViewController: UIViewController {
     // MARK: - Private Property
 
     private let dateFormater = DateFormatter()
+    private var networkManager = NetworkManager()
     private var actors: [Cast] = []
     private var genres = String()
 
-    // MARK: Property
+    // MARK: Public Property
 
     var data: Results?
     var genre = String()
@@ -211,36 +219,26 @@ final class MoviesDescriptionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setupUI(data: data)
         configureConstraint()
     }
 
     // MARK: Private Methods
-
     private func setupUI(data: Results?) {
-        view.addSubview(moviePosterImageView)
-        view.addSubview(contentScrollView)
-        dateFormater.dateFormat = Constants.resultDateFormat
-        guard let dataPosterImage = data?.posterPath,
-              let dataRating = data?.voteAverage, let dataReleaseDate = data?.releaseDate, let movieId = data?.id
-        else { return }
-        guard let urlImage = URL(string: Constants.imageRequestURL + dataPosterImage) else { return }
-        let session = URLSession.shared
-        let task = session.dataTask(with: urlImage) { data, _, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async {
-                let image = UIImage(data: data)
-                self.moviePosterImageView.image = image
-            }
-        }
-        task.resume()
+        getAndSetupAnotherUI(data: data)
+        setupGenre(data)
+    }
 
-        guard let url =
-            URL(
-                string: "https://api.themoviedb.org/3/movie/\(movieId)?api_key=d9e4494907230d135d6f6fd47beca82e&append_to_response=videos&language=ru"
-            )
+    private func setupGenre(_ data: Results?) {
+        guard let dataReleaseDate = data?.releaseDate,
+              let movieId = data?.id,
+              let url =
+              URL(
+                  string: "\(Constants.apiRequestURL)\(movieId)?" +
+                      "\(Constants.apiKeyURL)&\(Constants.apiResponseURL)&\(Constants.apiLanguageURL)"
+              )
         else { return }
+        let session = URLSession.shared
         let taskGenre = session.dataTask(with: url) { data, _, error in
             if error == nil, let parseData = data {
                 guard let genre = try? JSONDecoder().decode(MovieGenreNetwork.self, from: parseData) else { return }
@@ -260,21 +258,45 @@ final class MoviesDescriptionViewController: UIViewController {
             }
         }
         taskGenre.resume()
+    }
+
+    private func getAndSetupAnotherUI(data: Results?) {
+        view.addSubview(moviePosterImageView)
+        view.addSubview(contentScrollView)
+        dateFormater.dateFormat = Constants.resultDateFormat
+        guard let dataPosterImage = data?.posterPath,
+              let dataRating = data?.voteAverage,
+              let movieId = data?.id,
+              let urlImage = URL(string: Constants.imageRequestURL + dataPosterImage)
+        else { return }
+        let session = URLSession.shared
+        let task = session.dataTask(with: urlImage) { data, _, error in
+            guard let data = data, error == nil else { return }
+            DispatchQueue.main.async {
+                let image = UIImage(data: data)
+                self.moviePosterImageView.image = image
+            }
+        }
+        task.resume()
         movieNameLabel.text = data?.title
         ratingLabel.text = String(dataRating)
         descriptionLabel.text = data?.overview
         ratingLabel.textColor = {
             guard let rating = Double(ratingLabel.text ?? String()) else { return .lightGray }
             switch rating {
-            case 5 ..< 7: return .lightGray
-            case 7 ... 10: return .green
-            default: return .systemRed
+            case 5 ..< 7:
+                return .lightGray
+            case 7 ... 10:
+                return .green
+            default:
+                return .systemRed
             }
         }()
         DispatchQueue.main.async {
             guard let url =
                 URL(
-                    string: "https://api.themoviedb.org/3/movie/\(movieId)/credits?api_key=d9e4494907230d135d6f6fd47beca82e"
+                    string: "\(Constants.apiRequestURL)\(movieId)/" +
+                        "\(Constants.apiCreditsGenreURL)?\(Constants.apiKeyURL)"
                 )
             else { return }
             let session = URLSession.shared
@@ -292,6 +314,8 @@ final class MoviesDescriptionViewController: UIViewController {
             task.resume()
         }
     }
+
+
 
     private func configureConstraint() {
         NSLayoutConstraint.activate([
@@ -347,7 +371,7 @@ extension MoviesDescriptionViewController: UICollectionViewDataSource, UICollect
             actorName: actor.name,
             actorRoleName: actor.character
         )
-        cell.setupUI(actror: actors)
+        cell.setupActor(actors)
         return cell
     }
 }

@@ -71,6 +71,24 @@ final class MovieViewCell: UITableViewCell {
 
     override private init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupUI()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("")
+    }
+
+    // MARK: Methods
+
+    func setupView(movie: Movies) {
+        setupImage(movie: movie)
+        setupLabel(movie: movie)
+    }
+
+    // MARK: Private Methods
+
+    private func setupUI() {
         addSubview(moviePosterImageView)
         addSubview(movieNameLabel)
         addSubview(genreNameLabel)
@@ -80,14 +98,7 @@ final class MovieViewCell: UITableViewCell {
         configureConstraints()
     }
 
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    // MARK: Methods
-
-    func setupView(movie: Movies) {
+    private func setupImage(movie: Movies) {
         guard let urlImage = URL(string: Constants.imageURL + movie.movieImageName) else { return }
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: urlImage) { data, _, error in
@@ -98,9 +109,6 @@ final class MovieViewCell: UITableViewCell {
             }
         }
         task.resume()
-        genreNameLabel.text = movie.movieGenreName
-        movieNameLabel.text = movie.movieNameText
-        movieDateLabel.text = movie.movieDateText
         movieRatingImageView.image = {
             switch movie.ratingValue {
             case 0 ... 2: return UIImage(named: Constants.oneStarImageName)
@@ -113,7 +121,11 @@ final class MovieViewCell: UITableViewCell {
         }()
     }
 
-    // MARK: Private Methods
+    private func setupLabel(movie: Movies) {
+        genreNameLabel.text = movie.movieGenreName
+        movieNameLabel.text = movie.movieNameText
+        movieDateLabel.text = movie.movieDateText
+    }
 
     private func configureConstraints() {
         NSLayoutConstraint.activate([
