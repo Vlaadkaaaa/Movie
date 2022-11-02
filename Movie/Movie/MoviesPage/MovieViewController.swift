@@ -74,6 +74,7 @@ final class MovieViewController: UIViewController {
         movieTableView.register(AdViewCell.self, forCellReuseIdentifier: Constants.adCellIdentifier)
         addContraint()
     }
+
     private func setupRefreshControl() {
         let refresh = UIRefreshControl()
         refresh.addTarget(self, action: #selector(refreshPageAction), for: .valueChanged)

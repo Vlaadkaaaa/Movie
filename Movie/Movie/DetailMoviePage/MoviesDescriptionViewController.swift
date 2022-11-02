@@ -134,72 +134,79 @@ final class MoviesDescriptionViewController: UIViewController {
         return label
     }()
 
-    private let tabBarActionView: UIView = {
+    private let favotiteButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setBackgroundImage(UIImage(systemName: Constants.starSystemImageName), for: .normal)
+        return button
+    }()
+
+    private let favotiteLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = Constants.favoriteTitleText
+        label.font = .systemFont(ofSize: 11)
+        return label
+    }()
+
+    private let bookmarkButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setBackgroundImage(UIImage(systemName: Constants.bookmarkSystemImageName), for: .normal)
+        return button
+    }()
+
+    private let bookmarkLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = Constants.bookmarkTitleText
+        label.font = .systemFont(ofSize: 11)
+        return label
+    }()
+
+    private let button: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setBackgroundImage(UIImage(systemName: Constants.shareSystemImageName), for: .normal)
+        return button
+    }()
+
+    private let shareLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = Constants.shareTitleText
+        label.font = .systemFont(ofSize: 11)
+        return label
+    }()
+
+    private let moreButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setBackgroundImage(UIImage(systemName: Constants.moreSystemImageName), for: .normal)
+        return button
+    }()
+
+    private let moreLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = Constants.moreTitleText
+        label.font = .systemFont(ofSize: 11)
+        return label
+    }()
+
+    private lazy var tabBarActionView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        let favotiteButton = UIButton()
-        favotiteButton.translatesAutoresizingMaskIntoConstraints = false
-        favotiteButton.setBackgroundImage(UIImage(systemName: Constants.starSystemImageName), for: .normal)
-        let favotiteLabel = UILabel()
-        favotiteLabel.translatesAutoresizingMaskIntoConstraints = false
-        favotiteLabel.text = Constants.favoriteTitleText
-        favotiteLabel.font = .systemFont(ofSize: 11)
-        let bookmarkButton = UIButton()
-        bookmarkButton.translatesAutoresizingMaskIntoConstraints = false
-        bookmarkButton.setBackgroundImage(UIImage(systemName: Constants.bookmarkSystemImageName), for: .normal)
-        let bookmarkLabel = UILabel()
-        bookmarkLabel.translatesAutoresizingMaskIntoConstraints = false
-        bookmarkLabel.text = Constants.bookmarkTitleText
-        bookmarkLabel.font = .systemFont(ofSize: 11)
-        let shareButton = UIButton()
-        shareButton.translatesAutoresizingMaskIntoConstraints = false
-        shareButton.setBackgroundImage(UIImage(systemName: Constants.shareSystemImageName), for: .normal)
-        let shareLabel = UILabel()
-        shareLabel.translatesAutoresizingMaskIntoConstraints = false
-        shareLabel.text = Constants.shareTitleText
-        shareLabel.font = .systemFont(ofSize: 11)
-        let moreButton = UIButton()
-        moreButton.translatesAutoresizingMaskIntoConstraints = false
-        moreButton.setBackgroundImage(UIImage(systemName: Constants.moreSystemImageName), for: .normal)
-        let moreLabel = UILabel()
-        moreLabel.translatesAutoresizingMaskIntoConstraints = false
-        moreLabel.text = Constants.moreTitleText
-        moreLabel.font = .systemFont(ofSize: 11)
         view.tintColor = .lightGray
         view.addSubview(favotiteButton)
         view.addSubview(favotiteLabel)
         view.addSubview(bookmarkButton)
         view.addSubview(bookmarkLabel)
-        view.addSubview(shareButton)
+        view.addSubview(button)
         view.addSubview(shareLabel)
         view.addSubview(moreButton)
         view.addSubview(moreLabel)
-        NSLayoutConstraint.activate([
-            favotiteLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            favotiteLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
-            favotiteButton.centerXAnchor.constraint(equalTo: favotiteLabel.centerXAnchor, constant: 0),
-            favotiteButton.bottomAnchor.constraint(equalTo: favotiteLabel.topAnchor, constant: -5),
-            favotiteButton.heightAnchor.constraint(equalToConstant: 20),
-            favotiteButton.widthAnchor.constraint(equalToConstant: 20),
-            bookmarkLabel.leadingAnchor.constraint(equalTo: favotiteLabel.trailingAnchor, constant: 15),
-            bookmarkLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
-            bookmarkButton.centerXAnchor.constraint(equalTo: bookmarkLabel.centerXAnchor, constant: 0),
-            bookmarkButton.bottomAnchor.constraint(equalTo: bookmarkLabel.topAnchor, constant: -5),
-            bookmarkButton.heightAnchor.constraint(equalToConstant: 20),
-            bookmarkButton.widthAnchor.constraint(equalToConstant: 20),
-            shareLabel.leadingAnchor.constraint(equalTo: bookmarkLabel.trailingAnchor, constant: 15),
-            shareLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
-            shareButton.centerXAnchor.constraint(equalTo: shareLabel.centerXAnchor, constant: 0),
-            shareButton.bottomAnchor.constraint(equalTo: shareLabel.topAnchor, constant: -5),
-            shareButton.heightAnchor.constraint(equalToConstant: 20),
-            shareButton.widthAnchor.constraint(equalToConstant: 20),
-            moreLabel.leadingAnchor.constraint(equalTo: shareLabel.trailingAnchor, constant: 15),
-            moreLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
-            moreButton.centerXAnchor.constraint(equalTo: moreLabel.centerXAnchor, constant: 0),
-            moreButton.bottomAnchor.constraint(equalTo: moreLabel.topAnchor, constant: -10),
-            moreButton.heightAnchor.constraint(equalToConstant: 7.5),
-            moreButton.widthAnchor.constraint(equalToConstant: 20),
-        ])
+        detailConfigureConstraint()
         return view
     }()
 
@@ -224,6 +231,7 @@ final class MoviesDescriptionViewController: UIViewController {
     }
 
     // MARK: Private Methods
+
     private func setupUI(data: Results?) {
         getAndSetupAnotherUI(data: data)
         setupGenre(data)
@@ -315,8 +323,6 @@ final class MoviesDescriptionViewController: UIViewController {
         }
     }
 
-
-
     private func configureConstraint() {
         NSLayoutConstraint.activate([
             movieNameLabel.topAnchor.constraint(equalTo: backgroundBlackView.topAnchor, constant: 25),
@@ -344,6 +350,35 @@ final class MoviesDescriptionViewController: UIViewController {
             descriptionLabel.topAnchor.constraint(equalTo: descriptionTitleLabel.bottomAnchor, constant: 10),
             descriptionLabel.leadingAnchor.constraint(equalTo: backgroundBlackView.leadingAnchor, constant: 20),
             descriptionLabel.widthAnchor.constraint(equalToConstant: 360)
+        ])
+    }
+
+    private func detailConfigureConstraint() {
+        NSLayoutConstraint.activate([
+            favotiteLabel.leadingAnchor.constraint(equalTo: tabBarActionView.leadingAnchor, constant: 0),
+            favotiteLabel.bottomAnchor.constraint(equalTo: tabBarActionView.bottomAnchor, constant: -5),
+            favotiteButton.centerXAnchor.constraint(equalTo: favotiteLabel.centerXAnchor, constant: 0),
+            favotiteButton.bottomAnchor.constraint(equalTo: favotiteLabel.topAnchor, constant: -5),
+            favotiteButton.heightAnchor.constraint(equalToConstant: 20),
+            favotiteButton.widthAnchor.constraint(equalToConstant: 20),
+            bookmarkLabel.leadingAnchor.constraint(equalTo: favotiteLabel.trailingAnchor, constant: 15),
+            bookmarkLabel.bottomAnchor.constraint(equalTo: tabBarActionView.bottomAnchor, constant: -5),
+            bookmarkButton.centerXAnchor.constraint(equalTo: bookmarkLabel.centerXAnchor, constant: 0),
+            bookmarkButton.bottomAnchor.constraint(equalTo: bookmarkLabel.topAnchor, constant: -5),
+            bookmarkButton.heightAnchor.constraint(equalToConstant: 20),
+            bookmarkButton.widthAnchor.constraint(equalToConstant: 20),
+            shareLabel.leadingAnchor.constraint(equalTo: bookmarkLabel.trailingAnchor, constant: 15),
+            shareLabel.bottomAnchor.constraint(equalTo: tabBarActionView.bottomAnchor, constant: -5),
+            button.centerXAnchor.constraint(equalTo: shareLabel.centerXAnchor, constant: 0),
+            button.bottomAnchor.constraint(equalTo: shareLabel.topAnchor, constant: -5),
+            button.heightAnchor.constraint(equalToConstant: 20),
+            button.widthAnchor.constraint(equalToConstant: 20),
+            moreLabel.leadingAnchor.constraint(equalTo: shareLabel.trailingAnchor, constant: 15),
+            moreLabel.bottomAnchor.constraint(equalTo: tabBarActionView.bottomAnchor, constant: -5),
+            moreButton.centerXAnchor.constraint(equalTo: moreLabel.centerXAnchor, constant: 0),
+            moreButton.bottomAnchor.constraint(equalTo: moreLabel.topAnchor, constant: -10),
+            moreButton.heightAnchor.constraint(equalToConstant: 7.5),
+            moreButton.widthAnchor.constraint(equalToConstant: 20),
         ])
     }
 }
