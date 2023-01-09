@@ -12,7 +12,6 @@ final class MoviesDescriptionViewController: UIViewController {
         static let editDateFormat = "yyyy"
         static let watchImageName = "watch"
         static let actorCellIdentifier = "ActorCell"
-        static let CellIdentifier = ""
         static let actorTitleText = "Актеры"
         static let descriptionTitleText = "Описание"
         static let starSystemImageName = "star.fill"
