@@ -60,7 +60,7 @@ final class ActorCollectionViewCell: UICollectionViewCell {
     // MARK: - Public Metods
 
     func setupActor(_ actror: Actor) {
-        guard let urlImage = URL(string: "\(Constants.getImageURL) \(actror.actorImageName)") else { return }
+        guard let urlImage = URL(string: "\(Constants.getImageURL)\(actror.profilePath)") else { return }
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: urlImage) { data, _, error in
             guard let data = data, error == nil else { return }
@@ -70,7 +70,7 @@ final class ActorCollectionViewCell: UICollectionViewCell {
             }
         }
         task.resume()
-        actorNameLabel.text = actror.actorName
-        actorRoleLabel.text = actror.actorRoleName
+        actorNameLabel.text = actror.name
+        actorRoleLabel.text = actror.character
     }
 }

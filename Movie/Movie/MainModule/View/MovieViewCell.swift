@@ -81,7 +81,7 @@ final class MovieViewCell: UITableViewCell {
 
     // MARK: Methods
 
-    func setupView(movie: Movies) {
+    func setupView(movie: Movie) {
         setupImage(movie: movie)
         setupLabel(movie: movie)
     }
@@ -98,8 +98,8 @@ final class MovieViewCell: UITableViewCell {
         configureConstraints()
     }
 
-    private func setupImage(movie: Movies) {
-        guard let urlImage = URL(string: Constants.imageURL + movie.movieImageName) else { return }
+    private func setupImage(movie: Movie) {
+        guard let urlImage = URL(string: Constants.imageURL + movie.posterPath) else { return }
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: urlImage) { data, _, error in
             guard let data = data, error == nil else { return }
@@ -109,8 +109,9 @@ final class MovieViewCell: UITableViewCell {
             }
         }
         task.resume()
+
         movieRatingImageView.image = {
-            switch movie.ratingValue {
+            switch movie.voteAverage {
             case 0 ... 2: return UIImage(named: Constants.oneStarImageName)
             case 2 ... 4: return UIImage(named: Constants.twoStarImageName)
             case 4 ... 6: return UIImage(named: Constants.threeStarImageName)
@@ -121,10 +122,9 @@ final class MovieViewCell: UITableViewCell {
         }()
     }
 
-    private func setupLabel(movie: Movies) {
-        genreNameLabel.text = movie.movieGenreName
-        movieNameLabel.text = movie.movieNameText
-        movieDateLabel.text = movie.movieDateText
+    private func setupLabel(movie: Movie) {
+        movieNameLabel.text = movie.title
+        movieDateLabel.text = movie.releaseDate
     }
 
     private func configureConstraints() {
