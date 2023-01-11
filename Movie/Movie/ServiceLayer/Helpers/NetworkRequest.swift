@@ -1,6 +1,7 @@
 // NetworkRequest.swift
 // Copyright © RoadMap. All rights reserved.
 
+import Alamofire
 import Foundation
 
 /// Общий сетевой запрос
@@ -13,17 +14,15 @@ protocol NetworkRequest: AnyObject {
 /// Реализация сетевого запроса
 extension NetworkRequest {
     func load(_ url: URL, withCompletion completion: @escaping (Result<ModelType?, Error>) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data,
-                  let value = self.decode(data)
-            else {
-                guard let error = error else { return }
-                DispatchQueue.main.async { completion(.failure(error)) }
-                return
+        AF.request(url).responseData { [weak self] response in
+            guard let self else { return }
+            switch response.result {
+            case let .success(data):
+                guard let decodeData = self.decode(data) else { return }
+                completion(.success(decodeData))
+            case let .failure(error):
+                completion(.failure(error))
             }
-            DispatchQueue.main.async {
-                completion(.success(value))
-            }
-        }.resume()
+        }
     }
 }

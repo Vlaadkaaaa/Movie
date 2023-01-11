@@ -5,7 +5,7 @@ import Foundation
 import SwiftyJSON
 
 /// Презентер каталога фильмов
-class MainPresenter: MainViewPresenterProtocol {
+final class MainPresenter: MainViewPresenterProtocol {
     // MARK: - Public Property
 
     weak var view: MainViewProtocol?

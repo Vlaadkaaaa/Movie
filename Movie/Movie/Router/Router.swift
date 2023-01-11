@@ -3,25 +3,21 @@
 
 import UIKit
 
-protocol RouterMain {
-    var navigationController: UINavigationController? { get set }
-    var assemblyBuilder: AssemblyBilderProtocol? { get set }
-}
-
-protocol RouterProtocol: RouterMain {
-    func initialViewController()
-    func showDetail(id: Int)
-    func popToRoot()
-}
-
+/// Роутер
 final class Router: RouterProtocol {
+    // MARK: - Public Property
+
     var navigationController: UINavigationController?
     var assemblyBuilder: AssemblyBilderProtocol?
+
+    // MARK: - Init
 
     init(navigationController: UINavigationController, assemblyBuilder: AssemblyBilderProtocol) {
         self.navigationController = navigationController
         self.assemblyBuilder = assemblyBuilder
     }
+
+    // MARK: - Public Method
 
     func initialViewController() {
         if let navigationController {

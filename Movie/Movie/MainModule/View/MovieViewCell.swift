@@ -99,7 +99,7 @@ final class MovieViewCell: UITableViewCell {
     }
 
     private func setupImage(movie: Movie) {
-        guard let urlImage = URL(string: Constants.imageURL + movie.posterPath) else { return }
+        guard let urlImage = URL(string: "\(Constants.imageURL)\(movie.posterPath)") else { return }
         ImageRequest(url: urlImage).execute { [weak self] result in
             guard let self else { return }
             switch result {

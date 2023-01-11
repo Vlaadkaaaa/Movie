@@ -94,6 +94,7 @@ final class MovieViewController: UIViewController {
 
     @objc private func refreshPageAction() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.movieTableView.refreshControl?.beginRefreshing()
             self.movieTableView.reloadData()
             self.movieTableView.refreshControl?.endRefreshing()
         }

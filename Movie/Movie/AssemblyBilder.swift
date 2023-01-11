@@ -3,11 +3,13 @@
 
 import UIKit
 
+/// Протокол билдера
 protocol AssemblyBilderProtocol {
     func createMainModule(router: RouterProtocol) -> UIViewController?
     func createDetailModule(id: String, router: RouterProtocol) -> UIViewController?
 }
 
+/// Билдер
 final class AssemblyBilder: AssemblyBilderProtocol {
     func createMainModule(router: RouterProtocol) -> UIViewController? {
         let view = MovieViewController()
