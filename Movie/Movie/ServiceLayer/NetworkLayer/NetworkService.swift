@@ -11,6 +11,7 @@ final class NetworkManager: NetworkCoreService, NetworkServiceProtocol {
     private enum Constants {
         static let resultsText = "results"
         static let castText = "cast"
+        static let imageRequestURL = "https://image.tmdb.org/t/p/w500"
     }
 
     // MARK: - Public Methods
@@ -45,6 +46,18 @@ final class NetworkManager: NetworkCoreService, NetworkServiceProtocol {
             case let .success(json):
                 let actor = json?[Constants.castText].arrayValue.map { Actor(json: $0) }
                 completion(.success(actor))
+            case let .failure(error):
+                completion(.failure(error))
+            }
+        }
+    }
+
+    func fetchImage(url: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        let url = "\(Constants.imageRequestURL)\(url)"
+        AF.request(url).responseData { response in
+            switch response.result {
+            case let .success(data):
+                completion(.success(data))
             case let .failure(error):
                 completion(.failure(error))
             }

@@ -47,7 +47,30 @@ final class ActorCollectionViewCell: UICollectionViewCell {
         fatalError("")
     }
 
+    // MARK: - Public Metods
+
+    func configureCell(_ actror: Actor, networkService: NetworkServiceProtocol) {
+        actorNameLabel.text = actror.name
+        actorRoleLabel.text = actror.character
+        guard let profilePath = actror.profilePath,
+              let urlImage = URL(string: Constants.getImageURL + profilePath)
+        else { return }
+        setupImage(url: profilePath, networkService: networkService)
+    }
+
     // MARK: - Private Metods
+
+    private func setupImage(url: String, networkService: NetworkServiceProtocol) {
+        networkService.fetchImage(url: url) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case let .success(data):
+                self.actorImageView.image = UIImage(data: data)
+            case let .failure(error):
+                print(error.localizedDescription)
+            }
+        }
+    }
 
     private func setupUI() {
         addSubview(actorImageView)
@@ -55,24 +78,5 @@ final class ActorCollectionViewCell: UICollectionViewCell {
         addSubview(actorRoleLabel)
         actorImageView.layer.cornerRadius = 20
         actorImageView.clipsToBounds = true
-    }
-
-    // MARK: - Public Metods
-
-    func configureCell(_ actror: Actor) {
-        actorNameLabel.text = actror.name
-        actorRoleLabel.text = actror.character
-        guard let profilePath = actror.profilePath,
-              let urlImage = URL(string: Constants.getImageURL + profilePath)
-        else { return }
-        ImageRequest(url: urlImage).execute { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case let .success(image):
-                self.actorImageView.image = image
-            case let .failure(error):
-                print(error)
-            }
-        }
     }
 }

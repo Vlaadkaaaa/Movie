@@ -142,6 +142,7 @@ final class DescriptionViewController: UIViewController {
 
     // MARK: - Private Property
 
+    private let networkManager = NetworkManager()
     private var genre = String()
 
     // MARK: Public Property
@@ -172,16 +173,15 @@ final class DescriptionViewController: UIViewController {
     }
 
     private func fetchImage() {
-        guard let profilePath = presenter?.details?.posterPath,
-              let urlImage = URL(string: Constants.getImageURL + profilePath)
-        else { return }
-        ImageRequest(url: urlImage).execute { [weak self] result in
+        guard let profilePath = presenter?.details?.posterPath else { return }
+        let urlImage = "\(Constants.getImageURL)\(profilePath)"
+        networkManager.fetchImage(url: urlImage) { [weak self] result in
             guard let self else { return }
             switch result {
-            case let .success(image):
-                self.moviePosterImageView.image = image
+            case let .success(data):
+                self.moviePosterImageView.image = UIImage(data: data)
             case let .failure(error):
-                print(error)
+                print(error.localizedDescription)
             }
         }
     }
@@ -234,7 +234,7 @@ extension DescriptionViewController: UICollectionViewDataSource, UICollectionVie
             ) as? ActorCollectionViewCell
         else { return UICollectionViewCell() }
         guard let actor = presenter?.actors[indexPath.row] else { return UICollectionViewCell() }
-        cell.configureCell(actor)
+        cell.configureCell(actor, networkService: networkManager)
         return cell
     }
 }

@@ -81,8 +81,8 @@ final class MovieViewCell: UITableViewCell {
 
     // MARK: Methods
 
-    func setupView(movie: Movie) {
-        setupImage(movie: movie)
+    func setupView(movie: Movie, networkService: NetworkServiceProtocol) {
+        setupImage(movie: movie, networkService: networkService)
         setupLabel(movie: movie)
     }
 
@@ -98,15 +98,15 @@ final class MovieViewCell: UITableViewCell {
         configureConstraints()
     }
 
-    private func setupImage(movie: Movie) {
-        guard let urlImage = URL(string: "\(Constants.imageURL)\(movie.posterPath)") else { return }
-        ImageRequest(url: urlImage).execute { [weak self] result in
+    private func setupImage(movie: Movie, networkService: NetworkServiceProtocol) {
+        let urlImage = "\(Constants.imageURL)\(movie.posterPath)"
+        networkService.fetchImage(url: urlImage) { [weak self] result in
             guard let self else { return }
             switch result {
-            case let .success(image):
-                self.moviePosterImageView.image = image
+            case let .success(data):
+                self.moviePosterImageView.image = UIImage(data: data)
             case let .failure(error):
-                print(error)
+                print(error.localizedDescription)
             }
         }
 

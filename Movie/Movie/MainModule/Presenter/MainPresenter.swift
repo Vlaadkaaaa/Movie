@@ -12,6 +12,7 @@ final class MainPresenter: MainViewPresenterProtocol {
     var movies: [Movie] = []
     var movieGenre: MovieGenre = .popular
     var networkService: NetworkServiceProtocol?
+    var data: Data?
     var router: RouterProtocol?
 
     // MARK: - Init

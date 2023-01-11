@@ -39,6 +39,10 @@ final class MovieViewController: UIViewController {
         return table
     }()
 
+    // MARK: - Private Property
+
+    private var networkManager = NetworkManager()
+
     // MARK: Public Property
 
     var presenter: MainViewPresenterProtocol!
@@ -118,7 +122,7 @@ extension MovieViewController: UITableViewDataSource {
             for: indexPath
         ) as? MovieViewCell
         cell?.selectionStyle = .none
-        cell?.setupView(movie: presenter.movies[indexPath.row])
+        cell?.setupView(movie: presenter.movies[indexPath.row], networkService: networkManager)
         return cell ?? UITableViewCell()
     }
 }

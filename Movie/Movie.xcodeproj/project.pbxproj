@@ -28,8 +28,6 @@
 		CE2FC7BE296D3C6C00E9D0B5 /* MainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7BD296D3C6C00E9D0B5 /* MainPresenter.swift */; };
 		CE2FC7C0296D3C7C00E9D0B5 /* DetailPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7BF296D3C7C00E9D0B5 /* DetailPresenter.swift */; };
 		CE2FC7C2296DCD5A00E9D0B5 /* NetworkCoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7C1296DCD5A00E9D0B5 /* NetworkCoreService.swift */; };
-		CE2FC7C6296DD47300E9D0B5 /* ImageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7C5296DD47300E9D0B5 /* ImageService.swift */; };
-		CE2FC7C8296DD54A00E9D0B5 /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7C7296DD54A00E9D0B5 /* NetworkRequest.swift */; };
 		CE2FC7CC296E82D000E9D0B5 /* DetailViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7CB296E82D000E9D0B5 /* DetailViewProtocol.swift */; };
 		CE2FC7CE296E831700E9D0B5 /* DetailPresenterProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7CD296E831700E9D0B5 /* DetailPresenterProtocol.swift */; };
 		CE2FC7D0296E840E00E9D0B5 /* MainViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2FC7CF296E840E00E9D0B5 /* MainViewProtocol.swift */; };
@@ -60,8 +58,6 @@
 		CE2FC7BD296D3C6C00E9D0B5 /* MainPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPresenter.swift; sourceTree = "<group>"; };
 		CE2FC7BF296D3C7C00E9D0B5 /* DetailPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailPresenter.swift; sourceTree = "<group>"; };
 		CE2FC7C1296DCD5A00E9D0B5 /* NetworkCoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCoreService.swift; sourceTree = "<group>"; };
-		CE2FC7C5296DD47300E9D0B5 /* ImageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageService.swift; sourceTree = "<group>"; };
-		CE2FC7C7296DD54A00E9D0B5 /* NetworkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequest.swift; sourceTree = "<group>"; };
 		CE2FC7CB296E82D000E9D0B5 /* DetailViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewProtocol.swift; sourceTree = "<group>"; };
 		CE2FC7CD296E831700E9D0B5 /* DetailPresenterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailPresenterProtocol.swift; sourceTree = "<group>"; };
 		CE2FC7CF296E840E00E9D0B5 /* MainViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewProtocol.swift; sourceTree = "<group>"; };
@@ -215,7 +211,6 @@
 			children = (
 				55643E942907BB1E0058B3A8 /* NetworkService.swift */,
 				CE2FC7C1296DCD5A00E9D0B5 /* NetworkCoreService.swift */,
-				CE2FC7C5296DD47300E9D0B5 /* ImageService.swift */,
 			);
 			path = NetworkLayer;
 			sourceTree = "<group>";
@@ -231,7 +226,6 @@
 			isa = PBXGroup;
 			children = (
 				CE2FC7B4296C54B300E9D0B5 /* NetworkServiceProtocol.swift */,
-				CE2FC7C7296DD54A00E9D0B5 /* NetworkRequest.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -379,9 +373,7 @@
 				CE2FC7C2296DCD5A00E9D0B5 /* NetworkCoreService.swift in Sources */,
 				55B474F5290939DB00955188 /* Actor.swift in Sources */,
 				CE2FC7BC296C6F9D00E9D0B5 /* AssemblyBilder.swift in Sources */,
-				CE2FC7C8296DD54A00E9D0B5 /* NetworkRequest.swift in Sources */,
 				CE2FC7BE296D3C6C00E9D0B5 /* MainPresenter.swift in Sources */,
-				CE2FC7C6296DD47300E9D0B5 /* ImageService.swift in Sources */,
 				CE2FC7BA296C6F6600E9D0B5 /* Router.swift in Sources */,
 				55BDFAC629093C480086B2DA /* DescriptionViewController.swift in Sources */,
 				CE2FC7B5296C54B300E9D0B5 /* NetworkServiceProtocol.swift in Sources */,
