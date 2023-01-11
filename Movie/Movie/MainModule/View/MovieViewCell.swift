@@ -17,6 +17,10 @@ final class MovieViewCell: UITableViewCell {
         static let fiveStarImageName = "fiveStar"
     }
 
+    // MARK: - Public Property
+
+    weak var delegate: ViewCellDelegate?
+
     // MARK: - Private Visual Components
 
     private let moviePosterImageView: UIImageView = {
@@ -81,8 +85,8 @@ final class MovieViewCell: UITableViewCell {
 
     // MARK: Methods
 
-    func setupView(movie: Movies) {
-        setupImage(movie: movie)
+    func setupView(movie: Movie, networkService: NetworkServiceProtocol) {
+        setupImage(movie: movie, networkService: networkService)
         setupLabel(movie: movie)
     }
 
@@ -98,19 +102,20 @@ final class MovieViewCell: UITableViewCell {
         configureConstraints()
     }
 
-    private func setupImage(movie: Movies) {
-        guard let urlImage = URL(string: Constants.imageURL + movie.movieImageName) else { return }
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: urlImage) { data, _, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async {
-                let image = UIImage(data: data)
-                self.moviePosterImageView.image = image
+    private func setupImage(movie: Movie, networkService: NetworkServiceProtocol) {
+        let urlImage = "\(Constants.imageURL)\(movie.posterPath)"
+        networkService.fetchImage(url: urlImage) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case let .success(data):
+                self.moviePosterImageView.image = UIImage(data: data)
+            case let .failure(error):
+                self.delegate?.showAlert(error: error)
             }
         }
-        task.resume()
+
         movieRatingImageView.image = {
-            switch movie.ratingValue {
+            switch movie.voteAverage {
             case 0 ... 2: return UIImage(named: Constants.oneStarImageName)
             case 2 ... 4: return UIImage(named: Constants.twoStarImageName)
             case 4 ... 6: return UIImage(named: Constants.threeStarImageName)
@@ -121,10 +126,9 @@ final class MovieViewCell: UITableViewCell {
         }()
     }
 
-    private func setupLabel(movie: Movies) {
-        genreNameLabel.text = movie.movieGenreName
-        movieNameLabel.text = movie.movieNameText
-        movieDateLabel.text = movie.movieDateText
+    private func setupLabel(movie: Movie) {
+        movieNameLabel.text = movie.title
+        movieDateLabel.text = movie.releaseDate
     }
 
     private func configureConstraints() {
