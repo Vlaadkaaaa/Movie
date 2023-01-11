@@ -17,7 +17,7 @@ final class MainPresenter: MainViewPresenterProtocol {
 
     // MARK: - Init
 
-    required init(view: MainViewProtocol, networkService: NetworkServiceProtocol, router: RouterProtocol) {
+    init(view: MainViewProtocol, networkService: NetworkServiceProtocol, router: RouterProtocol) {
         self.view = view
         self.networkService = networkService
         self.router = router
@@ -40,7 +40,7 @@ final class MainPresenter: MainViewPresenterProtocol {
     }
 
     func showDetail(id: Int) {
-        router?.showDetail(id: id)
+        router?.routeToDetail(id: id)
     }
 
     func updateSegmentControl(page: Int) {

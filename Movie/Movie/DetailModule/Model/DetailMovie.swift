@@ -3,7 +3,7 @@
 
 import SwiftyJSON
 
-/// MovieGenreNetwork
+/// Детали фильма
 struct DetailMovie: Codable {
     /// Жанры
     let genres: [String]

@@ -3,7 +3,7 @@
 
 import Foundation
 
-/// Презентер конкретного фильма
+/// Презентер экрана детальной информации о фильме
 final class DetailPresenter: DetailPresenerProtocol {
     // MARK: - Public Property
 
@@ -16,7 +16,7 @@ final class DetailPresenter: DetailPresenerProtocol {
 
     // MARK: - Init
 
-    required init(
+    init(
         view: DetailViewProtocol,
         id: String,
         networkService: NetworkServiceProtocol,
@@ -44,7 +44,7 @@ final class DetailPresenter: DetailPresenerProtocol {
         }
     }
 
-    func fetchActor() {
+    func fetchActorDetail() {
         networkService.fetchActorDetail(movieId: id) { [weak self] result in
             guard let self else { return }
             switch result {

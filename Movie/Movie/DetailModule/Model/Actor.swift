@@ -3,7 +3,7 @@
 
 import SwiftyJSON
 
-/// Модель  актеры
+/// Актер
 struct Actor: Codable {
     /// Имя актера
     let name: String

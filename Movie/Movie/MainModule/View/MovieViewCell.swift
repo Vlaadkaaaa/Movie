@@ -17,6 +17,10 @@ final class MovieViewCell: UITableViewCell {
         static let fiveStarImageName = "fiveStar"
     }
 
+    // MARK: - Public Property
+
+    weak var delegate: ViewCellDelegate?
+
     // MARK: - Private Visual Components
 
     private let moviePosterImageView: UIImageView = {
@@ -106,7 +110,7 @@ final class MovieViewCell: UITableViewCell {
             case let .success(data):
                 self.moviePosterImageView.image = UIImage(data: data)
             case let .failure(error):
-                print(error.localizedDescription)
+                self.delegate?.showAlert(error: error)
             }
         }
 

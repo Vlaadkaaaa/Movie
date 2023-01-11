@@ -6,6 +6,6 @@ import Foundation
 /// Протокол для роутера
 protocol RouterProtocol: RouterMain {
     func initialViewController()
-    func showDetail(id: Int)
+    func routeToDetail(id: Int)
     func popToRoot()
 }

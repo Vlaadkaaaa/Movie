@@ -5,7 +5,7 @@ import Alamofire
 import Foundation
 
 /// Менеджер запросов
-final class NetworkManager: NetworkCoreService, NetworkServiceProtocol {
+final class NetworkService: NetworkCoreService, NetworkServiceProtocol {
     // MARK: - Private Constants
 
     private enum Constants {

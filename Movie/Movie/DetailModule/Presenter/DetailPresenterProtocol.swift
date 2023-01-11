@@ -6,9 +6,9 @@ import Foundation
 /// Протокол презентера конкретного фильма
 protocol DetailPresenerProtocol: AnyObject {
     var view: DetailViewProtocol? { get set }
+    var networkService: NetworkServiceProtocol { get set }
     var details: DetailMovie? { get set }
     var actors: [Actor] { get set }
-    init(view: DetailViewProtocol, id: String, networkService: NetworkServiceProtocol, router: RouterProtocol)
     func fetchDetail()
-    func fetchActor()
+    func fetchActorDetail()
 }

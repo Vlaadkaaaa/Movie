@@ -3,7 +3,7 @@
 
 import SwiftyJSON
 
-/// Массив фильмов
+/// Фильм
 struct Movie {
     /// ID фильма
     let id: Int

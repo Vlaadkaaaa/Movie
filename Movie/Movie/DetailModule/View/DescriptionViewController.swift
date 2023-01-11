@@ -9,8 +9,6 @@ final class DescriptionViewController: UIViewController {
     // MARK: Private Constant
 
     private enum Constants {
-        static let resultDateFormat = "yyyy-MM-dd"
-        static let editDateFormat = "yyyy"
         static let watchImageName = "watch"
         static let actorCellIdentifier = "ActorCell"
         static let actorTitleText = "Актеры"
@@ -23,29 +21,59 @@ final class DescriptionViewController: UIViewController {
         static let bookmarkTitleText = "Буду смотреть"
         static let shareTitleText = "Поделиться"
         static let moreTitleText = "Ещё"
-        static let imageRequestURL = "https://image.tmdb.org/t/p/w500"
-        static let apiRequestURL = "https://api.themoviedb.org/3/movie/"
-        static let apiKeyURL = "api_key=d9e4494907230d135d6f6fd47beca82e"
-        static let apiLanguageURL = "language=ru"
-        static let apiResponseURL = "append_to_response=videos"
+        static let titleErrorText = "Ошибочка"
         static let getImageURL = "https://image.tmdb.org/t/p/w500"
-        static let apiCreditsGenreURL = "credits"
+        static let viewWidthSizeNumber = 400
+        static let posterImageViewHeightNumber = 500
+        static let scrollHeightSizeNumber: CGFloat = 1250
+        static let viewYPositionNumber = 300
+        static let viewHeightSizeNumber = 1000
+        static let textThreeLinesNumber = 3
+        static let textZeroLinesNumber = 0
+        static let titleFontSizeNumber: CGFloat = 20
+        static let defaultFontSizeNumber: CGFloat = 14
+        static let contentWidthSizeNumber: CGFloat = 1000
+        static let contentHeightSizeNumber: CGFloat = 250
+        static let sectionInsetNumber: CGFloat = 10
+        static let layoutWidthSizeNumber: CGFloat = 150
+        static let layoutHeightSizeNumber: CGFloat = 250
+        static let twentyAnchorNumber: CGFloat = 20
+        static let fiveAnchorNumber: CGFloat = 5
+        static let zeroAnchorNumber: CGFloat = 0
+        static let tenAnchorNumber: CGFloat = 10
+        static let oneHundredAnchorNumber: CGFloat = 100
+        static let twentyFiveHundridNumber: CGFloat = 250
+        static let threeHundridNumber: CGFloat = 300
+        static let seventyAnchorNumber: CGFloat = 70
+        static let fivtyAnchorNumber: CGFloat = 50
+        static let thirtyFiveHundredNumber: CGFloat = 350
     }
 
     // MARK: Private visual Components
 
-    private let moviePosterImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 400, height: 500))
+    private let moviePosterImageView =
+        UIImageView(frame: CGRect(
+            x: 0,
+            y: 0,
+            width: Constants.viewWidthSizeNumber,
+            height: Constants.posterImageViewHeightNumber
+        ))
 
     private lazy var contentScrollView: UIScrollView = {
         let scroll = UIScrollView(frame: view.bounds)
         scroll.showsVerticalScrollIndicator = false
-        scroll.contentSize = CGSize(width: view.frame.width, height: 1250)
+        scroll.contentSize = CGSize(width: view.frame.width, height: Constants.scrollHeightSizeNumber)
         scroll.addSubview(backgroundBlackView)
         return scroll
     }()
 
     private lazy var backgroundBlackView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 300, width: 400, height: 1000))
+        let view = UIView(frame: CGRect(
+            x: 0,
+            y: Constants.viewYPositionNumber,
+            width: Constants.viewWidthSizeNumber,
+            height: Constants.viewHeightSizeNumber
+        ))
         view.backgroundColor = .black
         view.tintColor = .systemGray
         view.addSubview(movieNameLabel)
@@ -63,15 +91,15 @@ final class DescriptionViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.numberOfLines = 3
-        label.font = .boldSystemFont(ofSize: 20)
+        label.numberOfLines = Constants.textThreeLinesNumber
+        label.font = .boldSystemFont(ofSize: Constants.titleFontSizeNumber)
         return label
     }()
 
     private let ratingLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .boldSystemFont(ofSize: 14)
+        label.font = .boldSystemFont(ofSize: Constants.defaultFontSizeNumber)
         label.textAlignment = .center
         return label
     }()
@@ -79,10 +107,10 @@ final class DescriptionViewController: UIViewController {
     private let genreLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: Constants.defaultFontSizeNumber)
         label.textAlignment = .center
         label.textColor = .lightGray
-        label.numberOfLines = 0
+        label.numberOfLines = Constants.textZeroLinesNumber
         return label
     }()
 
@@ -98,7 +126,10 @@ final class DescriptionViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.backgroundColor = .black
-        collectionView.contentSize = CGSize(width: 1000, height: 250)
+        collectionView.contentSize = CGSize(
+            width: Constants.contentWidthSizeNumber,
+            height: Constants.contentHeightSizeNumber
+        )
         collectionView.register(ActorCollectionViewCell.self, forCellWithReuseIdentifier: Constants.actorCellIdentifier)
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -107,8 +138,13 @@ final class DescriptionViewController: UIViewController {
 
     private let actorCollectionViewLayout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        layout.itemSize = CGSize(width: 150, height: 250)
+        layout.sectionInset = UIEdgeInsets(
+            top: Constants.sectionInsetNumber,
+            left: Constants.sectionInsetNumber,
+            bottom: Constants.sectionInsetNumber,
+            right: Constants.sectionInsetNumber
+        )
+        layout.itemSize = CGSize(width: Constants.layoutWidthSizeNumber, height: Constants.layoutHeightSizeNumber)
         layout.scrollDirection = .horizontal
         return layout
     }()
@@ -118,14 +154,14 @@ final class DescriptionViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .systemGray3
         label.text = Constants.actorTitleText
-        label.font = .boldSystemFont(ofSize: 18)
+        label.font = .boldSystemFont(ofSize: Constants.titleFontSizeNumber)
         return label
     }()
 
     private let descriptionTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .boldSystemFont(ofSize: 18)
+        label.font = .boldSystemFont(ofSize: Constants.titleFontSizeNumber)
         label.textColor = .systemGray3
         label.text = Constants.descriptionTitleText
         return label
@@ -134,15 +170,14 @@ final class DescriptionViewController: UIViewController {
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 15)
+        label.font = .systemFont(ofSize: Constants.defaultFontSizeNumber)
         label.textColor = .systemGray
-        label.numberOfLines = 0
+        label.numberOfLines = Constants.textZeroLinesNumber
         return label
     }()
 
     // MARK: - Private Property
 
-    private let networkManager = NetworkManager()
     private var genre = String()
 
     // MARK: Public Property
@@ -162,11 +197,11 @@ final class DescriptionViewController: UIViewController {
         view.addSubview(moviePosterImageView)
         view.addSubview(contentScrollView)
         presenter?.fetchDetail()
-        presenter?.fetchActor()
+        presenter?.fetchActorDetail()
         configureConstraint()
     }
 
-    func getGenres() {
+    private func getGenres() {
         presenter?.details?.genres.forEach {
             genre += $0 + " "
         }
@@ -175,43 +210,77 @@ final class DescriptionViewController: UIViewController {
     private func fetchImage() {
         guard let profilePath = presenter?.details?.posterPath else { return }
         let urlImage = "\(Constants.getImageURL)\(profilePath)"
-        networkManager.fetchImage(url: urlImage) { [weak self] result in
+        presenter?.networkService.fetchImage(url: urlImage) { [weak self] result in
             guard let self else { return }
             switch result {
             case let .success(data):
                 self.moviePosterImageView.image = UIImage(data: data)
             case let .failure(error):
-                print(error.localizedDescription)
+                self.showAlert(title: Constants.titleErrorText, message: error.localizedDescription)
             }
         }
     }
 
     private func configureConstraint() {
         NSLayoutConstraint.activate([
-            movieNameLabel.topAnchor.constraint(equalTo: backgroundBlackView.topAnchor, constant: 25),
-            movieNameLabel.widthAnchor.constraint(equalToConstant: backgroundBlackView.frame.width - 100),
-            movieNameLabel.centerXAnchor.constraint(equalTo: backgroundBlackView.centerXAnchor, constant: 0),
-            ratingLabel.topAnchor.constraint(equalTo: movieNameLabel.bottomAnchor, constant: 15),
-            ratingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            genreLabel.topAnchor.constraint(equalTo: ratingLabel.bottomAnchor, constant: 5),
-            genreLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            genreLabel.widthAnchor.constraint(equalToConstant: 300),
-            seeMovieButton.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 10),
-            seeMovieButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
-            seeMovieButton.heightAnchor.constraint(equalToConstant: 70),
-            seeMovieButton.widthAnchor.constraint(equalToConstant: 250),
-            actorsLabel.topAnchor.constraint(equalTo: seeMovieButton.bottomAnchor, constant: 20),
-            actorsLabel.leadingAnchor.constraint(equalTo: backgroundBlackView.leadingAnchor, constant: 20),
-            actorCollectionView.topAnchor.constraint(equalTo: seeMovieButton.bottomAnchor, constant: 50),
-            actorCollectionView.leadingAnchor.constraint(equalTo: backgroundBlackView.leadingAnchor, constant: 0),
-            actorCollectionView.trailingAnchor.constraint(equalTo: backgroundBlackView.trailingAnchor, constant: 0),
-            actorCollectionView.heightAnchor.constraint(equalToConstant: 250),
+            movieNameLabel.topAnchor.constraint(
+                equalTo: backgroundBlackView.topAnchor,
+                constant: Constants.twentyAnchorNumber
+            ),
+            movieNameLabel.widthAnchor
+                .constraint(equalToConstant: backgroundBlackView.frame.width - Constants.oneHundredAnchorNumber),
+            movieNameLabel.centerXAnchor.constraint(
+                equalTo: backgroundBlackView.centerXAnchor,
+                constant: Constants.zeroAnchorNumber
+            ),
+            ratingLabel.topAnchor.constraint(equalTo: movieNameLabel.bottomAnchor, constant: Constants.tenAnchorNumber),
+            ratingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: Constants.zeroAnchorNumber),
+            genreLabel.topAnchor.constraint(equalTo: ratingLabel.bottomAnchor, constant: Constants.fiveAnchorNumber),
+            genreLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: Constants.zeroAnchorNumber),
+            genreLabel.widthAnchor.constraint(equalToConstant: Constants.threeHundridNumber),
+            seeMovieButton.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: Constants.tenAnchorNumber),
+            seeMovieButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: Constants.zeroAnchorNumber),
+            seeMovieButton.heightAnchor.constraint(equalToConstant: Constants.seventyAnchorNumber),
+            seeMovieButton.widthAnchor.constraint(equalToConstant: Constants.twentyFiveHundridNumber),
+            actorsLabel.topAnchor.constraint(
+                equalTo: seeMovieButton.bottomAnchor,
+                constant: Constants.twentyAnchorNumber
+            ),
+            actorsLabel.leadingAnchor.constraint(
+                equalTo: backgroundBlackView.leadingAnchor,
+                constant: Constants.twentyAnchorNumber
+            ),
+            actorCollectionView.topAnchor.constraint(
+                equalTo: seeMovieButton.bottomAnchor,
+                constant: Constants.fivtyAnchorNumber
+            ),
+            actorCollectionView.leadingAnchor.constraint(
+                equalTo: backgroundBlackView.leadingAnchor,
+                constant: Constants.zeroAnchorNumber
+            ),
+            actorCollectionView.trailingAnchor.constraint(
+                equalTo: backgroundBlackView.trailingAnchor,
+                constant: Constants.zeroAnchorNumber
+            ),
+            actorCollectionView.heightAnchor.constraint(equalToConstant: Constants.twentyFiveHundridNumber),
             actorCollectionView.widthAnchor.constraint(equalToConstant: backgroundBlackView.frame.width),
-            descriptionTitleLabel.topAnchor.constraint(equalTo: actorCollectionView.bottomAnchor, constant: 15),
-            descriptionTitleLabel.leadingAnchor.constraint(equalTo: backgroundBlackView.leadingAnchor, constant: 20),
-            descriptionLabel.topAnchor.constraint(equalTo: descriptionTitleLabel.bottomAnchor, constant: 10),
-            descriptionLabel.leadingAnchor.constraint(equalTo: backgroundBlackView.leadingAnchor, constant: 20),
-            descriptionLabel.widthAnchor.constraint(equalToConstant: 360)
+            descriptionTitleLabel.topAnchor.constraint(
+                equalTo: actorCollectionView.bottomAnchor,
+                constant: Constants.fivtyAnchorNumber
+            ),
+            descriptionTitleLabel.leadingAnchor.constraint(
+                equalTo: backgroundBlackView.leadingAnchor,
+                constant: Constants.twentyAnchorNumber
+            ),
+            descriptionLabel.topAnchor.constraint(
+                equalTo: descriptionTitleLabel.bottomAnchor,
+                constant: Constants.tenAnchorNumber
+            ),
+            descriptionLabel.leadingAnchor.constraint(
+                equalTo: backgroundBlackView.leadingAnchor,
+                constant: Constants.twentyAnchorNumber
+            ),
+            descriptionLabel.widthAnchor.constraint(equalToConstant: Constants.thirtyFiveHundredNumber)
         ])
     }
 }
@@ -233,11 +302,15 @@ extension DescriptionViewController: UICollectionViewDataSource, UICollectionVie
                 for: indexPath
             ) as? ActorCollectionViewCell
         else { return UICollectionViewCell() }
-        guard let actor = presenter?.actors[indexPath.row] else { return UICollectionViewCell() }
-        cell.configureCell(actor, networkService: networkManager)
+        guard let actor = presenter?.actors[indexPath.row],
+              let networkService = presenter?.networkService else { return UICollectionViewCell() }
+        cell.configureCell(actor, networkService: networkService)
+        cell.delegate = self
         return cell
     }
 }
+
+// MARK: - DetailViewProtocol
 
 extension DescriptionViewController: DetailViewProtocol {
     func succes() {
@@ -245,7 +318,7 @@ extension DescriptionViewController: DetailViewProtocol {
     }
 
     func failure(error: Error) {
-        print(error.localizedDescription)
+        showAlert(title: Constants.titleErrorText, message: error.localizedDescription)
     }
 
     func setupUI(detail: DetailMovie?) {
@@ -254,5 +327,13 @@ extension DescriptionViewController: DetailViewProtocol {
         getGenres()
         genreLabel.text = genre
         fetchImage()
+    }
+}
+
+// MARK: - ViewCellDelegate
+
+extension DescriptionViewController: ViewCellDelegate {
+    func showAlert(error: Error) {
+        showAlert(title: Constants.titleErrorText, message: error.localizedDescription)
     }
 }

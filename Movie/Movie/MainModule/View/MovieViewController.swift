@@ -12,15 +12,7 @@ final class MovieViewController: UIViewController {
         static let segmentControlItems = ["Популярное", "Ожидаемые", "Лучшие"]
         static let movieTitleText = "Фильмы"
         static let movieCellIdentifier = "MovieCell"
-        static let adCellIdentifier = "AdCell"
-        static let genres = ["popular", "upcoming"]
-        static let resultDateFormat = "yyyy-MM-dd"
-        static let editDateFormat = "dd MMM yyyy"
-        static let adImageName = "adsLogo"
-        static let apiRequestURL = "https://api.themoviedb.org/3/movie/"
-        static let apiKeyURL = "api_key=d9e4494907230d135d6f6fd47beca82e"
-        static let apiLanguageURL = "language=ru"
-        static let appendResponseVideosURL = "append_to_response=videos"
+        static let titleErrorText = "Ошибочка"
     }
 
     // MARK: - Private Visual Component
@@ -39,13 +31,9 @@ final class MovieViewController: UIViewController {
         return table
     }()
 
-    // MARK: - Private Property
-
-    private var networkManager = NetworkManager()
-
     // MARK: Public Property
 
-    var presenter: MainViewPresenterProtocol!
+    var presenter: MainViewPresenterProtocol?
 
     // MARK: - Lyfe Cycle
 
@@ -81,7 +69,7 @@ final class MovieViewController: UIViewController {
     }
 
     private func getMovies(genre: MovieGenre) {
-        presenter.fetchMovie(genre: genre)
+        presenter?.fetchMovie(genre: genre)
     }
 
     private func addContraint() {
@@ -105,7 +93,7 @@ final class MovieViewController: UIViewController {
     }
 
     @objc private func changeSegmentAction(_ sender: UISegmentedControl) {
-        presenter.updateSegmentControl(page: sender.selectedSegmentIndex)
+        presenter?.updateSegmentControl(page: sender.selectedSegmentIndex)
     }
 }
 
@@ -113,7 +101,7 @@ final class MovieViewController: UIViewController {
 
 extension MovieViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        presenter.movies.count
+        presenter?.movies.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -122,7 +110,11 @@ extension MovieViewController: UITableViewDataSource {
             for: indexPath
         ) as? MovieViewCell
         cell?.selectionStyle = .none
-        cell?.setupView(movie: presenter.movies[indexPath.row], networkService: networkManager)
+        guard let movie = presenter?.movies[indexPath.row],
+              let networkService = presenter?.networkService
+        else { return UITableViewCell() }
+        cell?.setupView(movie: movie, networkService: networkService)
+        cell?.delegate = self
         return cell ?? UITableViewCell()
     }
 }
@@ -131,8 +123,8 @@ extension MovieViewController: UITableViewDataSource {
 
 extension MovieViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let id = presenter.movies[indexPath.row].id
-        presenter.showDetail(id: id)
+        guard let id = presenter?.movies[indexPath.row].id else { return }
+        presenter?.showDetail(id: id)
     }
 }
 
@@ -144,6 +136,14 @@ extension MovieViewController: MainViewProtocol {
     }
 
     func failure(error: Error) {
-        print(error.localizedDescription)
+        showAlert(title: Constants.titleErrorText, message: error.localizedDescription)
+    }
+}
+
+// MARK: - ViewCellDelegate
+
+extension MovieViewController: ViewCellDelegate {
+    func showAlert(error: Error) {
+        showAlert(title: Constants.titleErrorText, message: error.localizedDescription)
     }
 }

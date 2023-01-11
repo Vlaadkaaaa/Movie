@@ -26,7 +26,7 @@ final class Router: RouterProtocol {
         }
     }
 
-    func showDetail(id: Int) {
+    func routeToDetail(id: Int) {
         if let navigationController {
             guard let detailVC = assemblyBuilder?.createDetailModule(id: "\(id)", router: self) else { return
             }

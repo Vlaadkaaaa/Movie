@@ -9,7 +9,12 @@ final class ActorCollectionViewCell: UICollectionViewCell {
 
     private enum Constants {
         static let getImageURL = "https://image.tmdb.org/t/p/w500"
+        static let titleErrorText = "Ошибочка"
     }
+
+    // MARK: - Public Property
+
+    weak var delegate: ViewCellDelegate?
 
     // MARK: - Private Visual Components
 
@@ -52,22 +57,21 @@ final class ActorCollectionViewCell: UICollectionViewCell {
     func configureCell(_ actror: Actor, networkService: NetworkServiceProtocol) {
         actorNameLabel.text = actror.name
         actorRoleLabel.text = actror.character
-        guard let profilePath = actror.profilePath,
-              let urlImage = URL(string: Constants.getImageURL + profilePath)
+        guard let profilePath = actror.profilePath
         else { return }
         setupImage(url: profilePath, networkService: networkService)
     }
 
     // MARK: - Private Metods
 
-    private func setupImage(url: String, networkService: NetworkServiceProtocol) {
-        networkService.fetchImage(url: url) { [weak self] result in
+    private func setupImage(url: String, networkService: NetworkServiceProtocol?) {
+        networkService?.fetchImage(url: url) { [weak self] result in
             guard let self else { return }
             switch result {
             case let .success(data):
                 self.actorImageView.image = UIImage(data: data)
             case let .failure(error):
-                print(error.localizedDescription)
+                self.delegate?.showAlert(error: error)
             }
         }
     }

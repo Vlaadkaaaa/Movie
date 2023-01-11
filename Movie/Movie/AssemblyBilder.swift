@@ -3,17 +3,17 @@
 
 import UIKit
 
-/// Протокол билдера
+/// Протокол сборщика модулей
 protocol AssemblyBilderProtocol {
     func createMainModule(router: RouterProtocol) -> UIViewController?
     func createDetailModule(id: String, router: RouterProtocol) -> UIViewController?
 }
 
-/// Билдер
+/// Сборщик модулей
 final class AssemblyBilder: AssemblyBilderProtocol {
     func createMainModule(router: RouterProtocol) -> UIViewController? {
         let view = MovieViewController()
-        let networkService = NetworkManager()
+        let networkService = NetworkService()
         let presenter = MainPresenter(view: view, networkService: networkService, router: router)
         view.presenter = presenter
         return view
@@ -21,7 +21,7 @@ final class AssemblyBilder: AssemblyBilderProtocol {
 
     func createDetailModule(id: String, router: RouterProtocol) -> UIViewController? {
         let view = DescriptionViewController()
-        let networkService = NetworkManager()
+        let networkService = NetworkService()
         let presenter = DetailPresenter(view: view, id: id, networkService: networkService, router: router)
         view.presenter = presenter
         return view
