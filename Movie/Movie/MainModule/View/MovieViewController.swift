@@ -39,10 +39,8 @@ final class MovieViewController: UIViewController {
         return table
     }()
 
-    // MARK: Private Property
+    // MARK: Public Property
 
-    private let dateFormater = DateFormatter()
-    private var movies: [Movie] = []
     var presenter: MainViewPresenterProtocol!
 
     // MARK: - Lyfe Cycle
@@ -58,7 +56,6 @@ final class MovieViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.tintColor = .white
         title = Constants.movieTitleText
-        dateFormater.dateFormat = Constants.resultDateFormat
         view.addSubview(filtherMovieSegmentControl)
         getMovies(genre: .popular)
         setupRefreshControl()
@@ -79,13 +76,6 @@ final class MovieViewController: UIViewController {
         movieTableView.refreshControl = refresh
     }
 
-    @objc private func refreshPageAction() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.movieTableView.reloadData()
-            self.movieTableView.refreshControl?.endRefreshing()
-        }
-    }
-
     private func getMovies(genre: MovieGenre) {
         presenter.fetchMovie(genre: genre)
     }
@@ -102,22 +92,23 @@ final class MovieViewController: UIViewController {
         ])
     }
 
-    @objc private func changeSegmentAction(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            getMovies(genre: .popular)
-
-        default:
-            getMovies(genre: .upcoming)
+    @objc private func refreshPageAction() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.movieTableView.reloadData()
+            self.movieTableView.refreshControl?.endRefreshing()
         }
+    }
+
+    @objc private func changeSegmentAction(_ sender: UISegmentedControl) {
+        presenter.updateSegmentControl(page: sender.selectedSegmentIndex)
     }
 }
 
-// MARK: - UITableViewDelegate, UITableViewDataSource
+// MARK: - UITableViewDataSource
 
-extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
+extension MovieViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        movies.count
+        presenter.movies.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -126,26 +117,28 @@ extension MovieViewController: UITableViewDelegate, UITableViewDataSource {
             for: indexPath
         ) as? MovieViewCell
         cell?.selectionStyle = .none
-        cell?.setupView(movie: movies[indexPath.row])
+        cell?.setupView(movie: presenter.movies[indexPath.row])
         return cell ?? UITableViewCell()
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = MoviesDescriptionViewController()
-        let id = movies[indexPath.row].id
-        vc.id = id
-        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
+// MARK: - UITableViewDelegate
+
+extension MovieViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let id = presenter.movies[indexPath.row].id
+        presenter.showDetail(id: id)
+    }
+}
+
+// MARK: - MainViewProtocol
+
 extension MovieViewController: MainViewProtocol {
-    func success(json: JSON?) {
-        guard let movies = (json?["results"].arrayValue.map { Movie(json: $0) }) else { return }
-        self.movies = movies
+    func success() {
         movieTableView.reloadData()
     }
 
     func failure(error: Error) {
-        print(error)
+        print(error.localizedDescription)
     }
 }

@@ -5,8 +5,11 @@ import SwiftyJSON
 
 /// Модель  актеры
 struct Actor: Codable {
+    /// Имя актера
     let name: String
+    /// Путь к фото
     let profilePath: String?
+    /// Описание
     let character: String
 
     init(json: JSON) {

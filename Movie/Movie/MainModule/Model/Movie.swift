@@ -5,12 +5,19 @@ import SwiftyJSON
 
 /// Массив фильмов
 struct Movie {
+    /// ID фильма
     let id: Int
+    /// Описание
     let overview: String
+    /// Путь к фото
     let posterPath: String
+    /// Дата релиза
     let releaseDate: String
+    /// Заголовок
     let title: String
+    /// Рейтинг
     let voteAverage: Double
+    /// Просмотры
     let voteCount: Int
 
     init(json: JSON) {

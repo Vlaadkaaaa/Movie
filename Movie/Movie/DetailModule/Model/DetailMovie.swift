@@ -1,24 +1,23 @@
-// Genre.swift
+// DetailMovie.swift
 // Copyright © RoadMap. All rights reserved.
 
 import SwiftyJSON
 
 /// MovieGenreNetwork
 struct DetailMovie: Codable {
-    let genres: [Genre]
+    /// Жанры
+    let genres: [String]
+    /// Описание
     let overview: String
+    /// Заголовок
     let title: String
+    /// Путь к картинке
     let posterPath: String?
 
     init(json: JSON) {
-        genres = json["genres"].arrayObject as? [Genre] ?? []
+        genres = json["genres"].arrayValue.map { $0["name"].stringValue }
         overview = json["overview"].stringValue
         title = json["title"].stringValue
         posterPath = json["poster_path"].stringValue
     }
-}
-
-/// Genres
-struct Genre: Codable {
-    let name: String
 }

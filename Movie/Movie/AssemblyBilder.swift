@@ -4,20 +4,24 @@
 import UIKit
 
 protocol AssemblyBilderProtocol {
-    static func createMainModule() -> UIViewController?
-    static func createDetailModule() -> UIViewController?
+    func createMainModule(router: RouterProtocol) -> UIViewController?
+    func createDetailModule(id: String, router: RouterProtocol) -> UIViewController?
 }
 
-final class AssemblyBilder {
-    static func createMainModule() -> UIViewController? {
+final class AssemblyBilder: AssemblyBilderProtocol {
+    func createMainModule(router: RouterProtocol) -> UIViewController? {
         let view = MovieViewController()
         let networkService = NetworkManager()
-        let presenter = MainPresenter(view: view, networkService: networkService)
+        let presenter = MainPresenter(view: view, networkService: networkService, router: router)
         view.presenter = presenter
         return view
     }
 
-    static func createDetailModule() -> UIViewController? {
-        nil
+    func createDetailModule(id: String, router: RouterProtocol) -> UIViewController? {
+        let view = DescriptionViewController()
+        let networkService = NetworkManager()
+        let presenter = DetailPresenter(view: view, id: id, networkService: networkService, router: router)
+        view.presenter = presenter
+        return view
     }
 }

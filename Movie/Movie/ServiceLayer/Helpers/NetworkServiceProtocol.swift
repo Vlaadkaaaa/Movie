@@ -1,16 +1,16 @@
 // NetworkServiceProtocol.swift
 // Copyright © RoadMap. All rights reserved.
 
-import SwiftyJSON
+import Foundation
 
 /// Протокол для сетевого слоя
 protocol NetworkServiceProtocol {
-    func fetchMovie(genre: MovieGenre, completion: @escaping (Result<JSON?, Error>) -> Void)
-    func fetchMovieDetail(movieId: String, completion: @escaping (Result<JSON?, Error>) -> Void)
-    func fetchActor(movieID: String, completion: @escaping (Result<JSON?, Error>) -> Void)
+    func fetchMovie(genre: MovieGenre, completion: @escaping (Result<[Movie]?, Error>) -> Void)
+    func fetchDetail(movieId: String, completion: @escaping (Result<DetailMovie?, Error>) -> Void)
+    func fetchActorDetail(movieId: String, completion: @escaping (Result<[Actor]?, Error>) -> Void)
 }
 
-///
+/// Жанры фильмов
 enum MovieGenre: String {
     case popular, upcoming
 }

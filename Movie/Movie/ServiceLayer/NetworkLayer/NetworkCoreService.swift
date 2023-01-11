@@ -1,11 +1,12 @@
-// NetworkManager.swift
+// NetworkCoreService.swift
 // Copyright © RoadMap. All rights reserved.
 
 import Alamofire
+import Foundation
 import SwiftyJSON
 
-/// Менеджер запросов
-final class NetworkManager: NetworkServiceProtocol {
+///
+class NetworkCoreService {
     // MARK: - Private Constants
 
     private enum Constants {
@@ -39,8 +40,8 @@ final class NetworkManager: NetworkServiceProtocol {
     // MARK: - Private Method
 
     private func alamofireRequest(url: String, completion: @escaping (Result<JSON?, Error>) -> Void) {
-        AF.request(url).responseData { reponse in
-            switch reponse.result {
+        AF.request(url).responseData { response in
+            switch response.result {
             case let .success(value):
                 let json = JSON(value)
                 completion(.success(json))

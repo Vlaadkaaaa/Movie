@@ -59,18 +59,20 @@ final class ActorCollectionViewCell: UICollectionViewCell {
 
     // MARK: - Public Metods
 
-    func setupActor(_ actror: Actor) {
-        guard let urlImage = URL(string: "\(Constants.getImageURL)\(actror.profilePath)") else { return }
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: urlImage) { data, _, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async {
-                let image = UIImage(data: data)
-                self.actorImageView.image = image
-            }
-        }
-        task.resume()
+    func configureCell(_ actror: Actor) {
         actorNameLabel.text = actror.name
         actorRoleLabel.text = actror.character
+        guard let profilePath = actror.profilePath,
+              let urlImage = URL(string: Constants.getImageURL + profilePath)
+        else { return }
+        ImageRequest(url: urlImage).execute { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case let .success(image):
+                self.actorImageView.image = image
+            case let .failure(error):
+                print(error)
+            }
+        }
     }
 }

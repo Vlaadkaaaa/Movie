@@ -1,11 +1,11 @@
-// MoviesDescriptionViewController.swift
+// DescriptionViewController.swift
 // Copyright © RoadMap. All rights reserved.
 
 import SwiftyJSON
 import UIKit
 
 /// Экран конкретного фильма
-final class MoviesDescriptionViewController: UIViewController {
+final class DescriptionViewController: UIViewController {
     // MARK: Private Constant
 
     private enum Constants {
@@ -28,6 +28,7 @@ final class MoviesDescriptionViewController: UIViewController {
         static let apiKeyURL = "api_key=d9e4494907230d135d6f6fd47beca82e"
         static let apiLanguageURL = "language=ru"
         static let apiResponseURL = "append_to_response=videos"
+        static let getImageURL = "https://image.tmdb.org/t/p/w500"
         static let apiCreditsGenreURL = "credits"
     }
 
@@ -81,6 +82,7 @@ final class MoviesDescriptionViewController: UIViewController {
         label.font = .systemFont(ofSize: 14)
         label.textAlignment = .center
         label.textColor = .lightGray
+        label.numberOfLines = 0
         return label
     }()
 
@@ -140,102 +142,44 @@ final class MoviesDescriptionViewController: UIViewController {
 
     // MARK: - Private Property
 
-    private let dateFormater = DateFormatter()
-    private var networkManager = NetworkManager()
-    private var actors: [Actor] = []
     private var genre = String()
 
     // MARK: Public Property
 
-    var id: Int?
-    var genreNet: DetailMovie?
-    var genres: [DetailMovie] = []
+    var presenter: DetailPresenerProtocol?
 
     // MARK: - Lyfe Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        configureConstraint()
     }
 
     // MARK: Private Methods
 
     private func setupUI() {
-        fetchDetail()
-        getAndSetupAnotherUI()
-    }
-
-    private func fetchDetail() {
-        guard let id else { return }
-//        networkManager.fetchMovieDetail(movieId: "\(id)") { result in
-//            switch result {
-//            case let .success(json):
-//
-//                guard let genres = (json?.arrayValue.map { DetailMovie(json: $0) }) else { return }
-//                self.genres = genres
-//            case let .failure(error):
-//                print(error)
-//            }
-//        }
-
-        guard
-            let url =
-            URL(
-                string: "\(Constants.apiRequestURL)\(id)?" +
-                    "\(Constants.apiKeyURL)&\(Constants.apiResponseURL)&\(Constants.apiLanguageURL)"
-            )
-        else { return }
-        let session = URLSession.shared
-        let taskGenre = session.dataTask(with: url) { data, _, error in
-            if error == nil, let parseData = data {
-                guard let genre = try? JSONDecoder().decode(DetailMovie.self, from: parseData) else { return }
-
-                self.genreNet = genre
-                self.getGenres()
-            }
-        }
-        taskGenre.resume()
+        view.addSubview(moviePosterImageView)
+        view.addSubview(contentScrollView)
+        presenter?.fetchDetail()
+        presenter?.fetchActor()
+        configureConstraint()
     }
 
     func getGenres() {
-        genre = String()
-        guard let genres = genreNet?.genres else { return }
-        for genre in genres {
-            if self.genres.isEmpty {
-                self.genre += genre.name
-            } else {
-                self.genre += ", " + genre.name
-            }
+        presenter?.details?.genres.forEach {
+            genre += $0 + " "
         }
     }
 
-    private func getAndSetupAnotherUI() {
-        view.addSubview(moviePosterImageView)
-        view.addSubview(contentScrollView)
-        movieNameLabel.text = genreNet?.title
-        descriptionLabel.text = genreNet?.overview
-        genreLabel.text = genre
-        ratingLabel.textColor = {
-            guard let rating = Double(ratingLabel.text ?? String()) else { return .lightGray }
-            switch rating {
-            case 5 ..< 7:
-                return .lightGray
-            case 7 ... 10:
-                return .green
-            default:
-                return .systemRed
-            }
-        }()
-
-        guard let id else { return }
-
-        networkManager.fetchActor(movieID: "\(id)") { result in
+    private func fetchImage() {
+        guard let profilePath = presenter?.details?.posterPath,
+              let urlImage = URL(string: Constants.getImageURL + profilePath)
+        else { return }
+        ImageRequest(url: urlImage).execute { [weak self] result in
+            guard let self else { return }
             switch result {
-            case let .success(json):
-                guard let actors = (json?["cast"].arrayValue.map { Actor(json: $0) }) else { return }
-                self.actors = actors
-                self.actorCollectionView.reloadData()
+            case let .success(image):
+                self.moviePosterImageView.image = image
             case let .failure(error):
                 print(error)
             }
@@ -251,6 +195,7 @@ final class MoviesDescriptionViewController: UIViewController {
             ratingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
             genreLabel.topAnchor.constraint(equalTo: ratingLabel.bottomAnchor, constant: 5),
             genreLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
+            genreLabel.widthAnchor.constraint(equalToConstant: 300),
             seeMovieButton.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 10),
             seeMovieButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0),
             seeMovieButton.heightAnchor.constraint(equalToConstant: 70),
@@ -273,9 +218,9 @@ final class MoviesDescriptionViewController: UIViewController {
 
 // MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 
-extension MoviesDescriptionViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+extension DescriptionViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        actors.count
+        presenter?.actors.count ?? 0
     }
 
     func collectionView(
@@ -288,7 +233,26 @@ extension MoviesDescriptionViewController: UICollectionViewDataSource, UICollect
                 for: indexPath
             ) as? ActorCollectionViewCell
         else { return UICollectionViewCell() }
-        cell.setupActor(actors[indexPath.row])
+        guard let actor = presenter?.actors[indexPath.row] else { return UICollectionViewCell() }
+        cell.configureCell(actor)
         return cell
+    }
+}
+
+extension DescriptionViewController: DetailViewProtocol {
+    func succes() {
+        actorCollectionView.reloadData()
+    }
+
+    func failure(error: Error) {
+        print(error.localizedDescription)
+    }
+
+    func setupUI(detail: DetailMovie?) {
+        movieNameLabel.text = presenter?.details?.title
+        descriptionLabel.text = presenter?.details?.overview
+        getGenres()
+        genreLabel.text = genre
+        fetchImage()
     }
 }

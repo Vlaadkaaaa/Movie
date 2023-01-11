@@ -12,11 +12,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        guard let windowScene = scene as? UIWindowScene,
-              let assembly = AssemblyBilder.createMainModule()
+        guard let windowScene = scene as? UIWindowScene
+
         else { return }
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = UINavigationController(rootViewController: assembly)
+        let assembly = AssemblyBilder()
+        let navController = UINavigationController()
+        let router = Router(navigationController: navController, assemblyBuilder: assembly)
+        router.initialViewController()
+        window?.rootViewController = navController
         window?.backgroundColor = .systemBackground
         window?.makeKeyAndVisible()
     }

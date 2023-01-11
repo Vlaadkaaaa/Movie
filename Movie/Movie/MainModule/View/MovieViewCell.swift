@@ -100,15 +100,15 @@ final class MovieViewCell: UITableViewCell {
 
     private func setupImage(movie: Movie) {
         guard let urlImage = URL(string: Constants.imageURL + movie.posterPath) else { return }
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: urlImage) { data, _, error in
-            guard let data = data, error == nil else { return }
-            DispatchQueue.main.async {
-                let image = UIImage(data: data)
+        ImageRequest(url: urlImage).execute { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case let .success(image):
                 self.moviePosterImageView.image = image
+            case let .failure(error):
+                print(error)
             }
         }
-        task.resume()
 
         movieRatingImageView.image = {
             switch movie.voteAverage {
